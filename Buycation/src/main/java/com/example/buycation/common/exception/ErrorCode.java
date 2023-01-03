@@ -40,4 +40,8 @@ public enum ErrorCode {
 
     private final String msg;
     private final int statusCode;
+
+    public int getStatus() {
+        return 0;
+    }
 }

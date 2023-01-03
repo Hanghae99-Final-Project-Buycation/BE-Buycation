@@ -2,6 +2,7 @@ package com.example.buycation.members.member.entity;
 
 import com.example.buycation.members.profile.entity.Review;
 import com.example.buycation.posting.entity.Posting;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,10 +43,16 @@ public class Member {
     private String address;
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
-    private List<Review> reviews = new ArrayList<>();
+    private final List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
-    private List<Posting> postings = new ArrayList<>();
+    private final List<Posting> postings = new ArrayList<>();
 
-
+    @Builder
+    public Member(String email, String password, String nickname, String address) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.address = address;
+    }
 }
