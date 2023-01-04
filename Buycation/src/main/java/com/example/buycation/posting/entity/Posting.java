@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -56,13 +57,13 @@ public class Posting extends TimeStamped {
     @Column(nullable = false)
     private boolean status = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId",nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "posting")
+    @OneToMany(mappedBy = "posting",fetch = FetchType.LAZY)
     private List<Participant> participants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "posting")
+    @OneToMany(mappedBy = "posting",fetch = FetchType.LAZY)
     private List<Application> applications = new ArrayList<>();
 }

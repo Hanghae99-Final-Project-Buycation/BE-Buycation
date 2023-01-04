@@ -1,9 +1,11 @@
 package com.example.buycation.common;
 
 import com.example.buycation.common.exception.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResponseMessage<T> {
     private String msg;
     private int statusCode;
@@ -18,6 +20,12 @@ public class ResponseMessage<T> {
     public ResponseMessage(ErrorCode errorCode, T data) {
         this.msg = errorCode.getMsg();
         this.statusCode = errorCode.getStatusCode();
+        this.data = data;
+    }
+
+    public ResponseMessage(MessageCode messageCode, T data) {
+        this.msg = messageCode.getMsg();
+        this.statusCode = messageCode.getStatusCode();
         this.data = data;
     }
 }
