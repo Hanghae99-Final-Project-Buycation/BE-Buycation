@@ -3,6 +3,7 @@ package com.example.buycation.comment.entity;
 import com.example.buycation.common.TimeStamped;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.posting.entity.Posting;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,15 @@ public class Comment extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postingId",nullable = false)
     private Posting posting;
+
+    @Builder
+    public Comment(String content, Member member, Posting posting) {
+        this.content = content;
+        this.member = member;
+        this.posting = posting;
+    }
+
+    public void update(String content) {
+        this.content = content;
+    }
 }

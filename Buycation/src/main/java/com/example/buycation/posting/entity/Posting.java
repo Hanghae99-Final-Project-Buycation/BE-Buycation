@@ -1,5 +1,6 @@
 package com.example.buycation.posting.entity;
 
+import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.common.TimeStamped;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.participant.entity.Application;
@@ -62,8 +63,15 @@ public class Posting extends TimeStamped {
     private Member member;
 
     @OneToMany(mappedBy = "posting",fetch = FetchType.LAZY)
-    private List<Participant> participants = new ArrayList<>();
+    private List<Participant> participantList = new ArrayList<>();
 
     @OneToMany(mappedBy = "posting",fetch = FetchType.LAZY)
-    private List<Application> applications = new ArrayList<>();
+    private List<Application> applicationList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "posting",fetch = FetchType.LAZY)
+    private List<Comment> commentList = new ArrayList<>();
+
+    public void add(Participant participant){this.participantList.add(participant);}
+    public void add(Application application){this.applicationList.add(application);}
+    public void add(Comment comment){this.commentList.add(comment);}
 }

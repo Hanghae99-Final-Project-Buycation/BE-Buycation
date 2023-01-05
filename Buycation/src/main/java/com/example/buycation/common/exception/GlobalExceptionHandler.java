@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({CustomException.class})
-    protected ResponseEntity handleCustomException(CustomException ex) {
-        return new ResponseEntity(new ResponseMessage(ex.getErrorCode().getMsg(), ex.getErrorCode().getStatusCode(), ex.getErrorCode())
+    protected ResponseEntity<?> handleCustomException(CustomException ex) {
+        return new ResponseEntity<>(new ResponseMessage<>(ex.getErrorCode().getMsg(), ex.getErrorCode().getStatusCode(), ex.getErrorCode())
                 , HttpStatus.OK);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    protected ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
         StringBuilder errMessage = new StringBuilder();
 
@@ -35,8 +35,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({Exception.class})
-    protected ResponseEntity handleServerException(Exception ex) {
-        return new ResponseEntity(new ResponseMessage<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "error")
+
+    protected ResponseEntity<?> handleServerException(Exception ex) {
+        return new ResponseEntity<>(new ResponseMessage<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "error")
                 , HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

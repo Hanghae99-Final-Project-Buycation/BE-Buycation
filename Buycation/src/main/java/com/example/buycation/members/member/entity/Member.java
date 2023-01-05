@@ -43,10 +43,14 @@ public class Member {
     private String address;
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviewList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member",fetch = FetchType.LAZY)
-    private List<Posting> postings = new ArrayList<>();
+    private List<Posting> postingList = new ArrayList<>();
+
+    public void add(Review review){this.reviewList.add(review);}
+    public void add(Posting posting){this.postingList.add(posting);}
+
 
     @Builder
     public Member(String email, String password, String nickname, String address) {
@@ -56,3 +60,4 @@ public class Member {
         this.address = address;
     }
 }
+
