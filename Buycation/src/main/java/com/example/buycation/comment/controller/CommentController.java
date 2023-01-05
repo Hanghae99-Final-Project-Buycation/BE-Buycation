@@ -8,11 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.example.buycation.common.MessageCode.COMMENT_CREATE_SUCCESS;
+import static com.example.buycation.common.MessageCode.COMMENT_MODIFY_SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +29,12 @@ public class CommentController {
                                             @PathVariable Long postingId) {
         commentService.createComment(commentRequestDto, userDetails.getMember(), postingId);
         return new ResponseMessage<>(COMMENT_CREATE_SUCCESS, null);
+    }
+    @PutMapping("/comments/{commentId}")
+    public ResponseMessage<?> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                            @RequestBody CommentRequestDto commentRequestDto,
+                                            @PathVariable Long commentId) {
+        commentService.updateComment(commentRequestDto, commentId, userDetails.getMember());
+        return new ResponseMessage<>(COMMENT_MODIFY_SUCCESS, null);
     }
 }
