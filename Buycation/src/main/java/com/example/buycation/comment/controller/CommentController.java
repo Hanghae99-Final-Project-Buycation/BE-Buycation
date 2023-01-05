@@ -6,6 +6,7 @@ import com.example.buycation.common.ResponseMessage;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.example.buycation.common.MessageCode.COMMENT_CREATE_SUCCESS;
+import static com.example.buycation.common.MessageCode.COMMENT_DELETE_SUCCESS;
 import static com.example.buycation.common.MessageCode.COMMENT_MODIFY_SUCCESS;
 
 @RestController
@@ -36,5 +38,11 @@ public class CommentController {
                                             @PathVariable Long commentId) {
         commentService.updateComment(commentRequestDto, commentId, userDetails.getMember());
         return new ResponseMessage<>(COMMENT_MODIFY_SUCCESS, null);
+    }
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseMessage<?> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                            @PathVariable Long commentId) {
+        commentService.deleteComment(commentId, userDetails.getMember());
+        return new ResponseMessage<>(COMMENT_DELETE_SUCCESS, null);
     }
 }
