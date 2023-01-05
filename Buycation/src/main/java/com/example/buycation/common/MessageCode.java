@@ -41,8 +41,7 @@ public enum MessageCode {
     MY_POSTING_LOOKUP_SUCCESS("내 게시글 조회에 성공하였습니다.",200),
     PARTICPATION_POSTING_LOOKUP_SUCCESS("참여 게시글 조회에 성공하였습니다.",200),
     REVIEW_LIST_LOOKUP_SUCCESS("평점 목록 조회에 성공하였습니다.",200),
-    REVIEW_WRITE_SUCCESS("평점 남기기에 성공하였습니다.",200),
-    ;
+    REVIEW_WRITE_SUCCESS("평점 남기기에 성공하였습니다.",200);
 
     private final String msg;
     private final int statusCode;
