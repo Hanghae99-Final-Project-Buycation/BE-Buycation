@@ -41,4 +41,13 @@ public class CommentService {
         }
         comment.update(commentRequestDto.getContent());
     }
+
+    @Transactional
+    public void deleteComment(Long commentId, Member member) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
+        if (!comment.getMember().equals(member)){
+            throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
+        }
+        commentRepository.delete(comment);
+    }
 }
