@@ -33,6 +33,7 @@ public class PostingService {
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
         Posting posting = postingMapper.toPosting(postingRequestDto, member);
         postingRepository.save(posting);
+        member.add(posting);
     }
 
 
