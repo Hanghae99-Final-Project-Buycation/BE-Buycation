@@ -51,6 +51,7 @@ public class Member {
     public void add(Review review){this.reviewList.add(review);}
     public void add(Posting posting){this.postingList.add(posting);}
 
+
     @Builder
     public Member(String email, String password, String nickname, String address) {
         this.email = email;
@@ -59,3 +60,4 @@ public class Member {
         this.address = address;
     }
 }
+
