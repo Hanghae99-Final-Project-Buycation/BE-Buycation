@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
+import static com.example.buycation.common.exception.ErrorCode.COMMENT_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 
 @Service
@@ -29,5 +31,14 @@ public class CommentService {
         Comment comment = commentMapper.toComment(commentRequestDto, member, posting);
         commentRepository.save(comment);
         posting.add(comment);
+    }
+
+    @Transactional
+    public void updateComment(CommentRequestDto commentRequestDto, Long commentId, Member member) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
+        if (!comment.getMember().equals(member)){
+            throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
+        }
+        comment.update(commentRequestDto.getContent());
     }
 }
