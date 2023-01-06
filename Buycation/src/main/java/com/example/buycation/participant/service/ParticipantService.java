@@ -22,7 +22,9 @@ import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_APP
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DECISION_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_APPLICATION;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_PARTICIPATION;
+import static com.example.buycation.common.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
+import static com.example.buycation.common.exception.ErrorCode.WRITER_PARTICIPATION_CANAEL;
 
 @Service
 @RequiredArgsConstructor
@@ -113,5 +115,23 @@ public class ParticipantService {
 
         applicationRepository.deleteById(applicationId);
 
+    }
+
+    @Transactional
+    public void cancelParticipation(Member member, Long postingId) {
+        Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        //게시글 작성자 참가취소 금지
+        if (posting.getMember().getId().equals(member.getId())){
+            throw new CustomException(WRITER_PARTICIPATION_CANAEL);
+        }
+
+        Participant participant = participantRepository.findByPostingAndMember(posting, member);
+
+        if (participant == null){
+            throw new CustomException(PARTICIPANT_NOT_FOUND);
+        }
+
+        participantRepository.deleteById(participant.getId());
     }
 }

@@ -19,11 +19,13 @@ public enum ErrorCode {
     DUPLICATE_APPLICATION("이미 지원한 유저입니다.", 400),
     DUPLICATE_PARTICIPATION("이미 참가한 유저입니다.", 400),
 
+
     //404 NOT_FOUND 잘못된 리소스 접근
     APPLICANT_NOT_FOUND("존재하지 않는 지원자 입니다.",404),
     POSTING_NOT_FOUND("존재하지 않는 게시글 입니다.",404),
     COMMENT_NOT_FOUND("존재하지 않는 댓글 입니다.", 404),
     USERNAME_NOT_FOUND("존재하지 않는 아이디 입니다.",404),
+    PARTICIPANT_NOT_FOUND("존재하지 않는 참가자 입니다.",404),
     INCORRECT_PASSWORD("비밀번호가 일치하지 않습니다.",404),
 
     //401 잘못된 권한 접근
@@ -32,6 +34,7 @@ public enum ErrorCode {
     AUTHORIZATION_CREATE_FAIL("생성 권한이 없습니다.", 401),
     AUTHORIZATION_DECISION_FAIL("결정 권한이 없습니다.", 401),
     AUTHORIZATION_APPLICANT_LOOKUP_FAIL("지원자 조회 권한이 없습니다.", 401),
+    WRITER_PARTICIPATION_CANAEL("작성자는 참가취소를 할 수 없습니다. 게시글을 삭제하여 주세요.", 401),
 
     //필터부분 에러
     FORBIDDEN_ERROR("서버 사용 권한이 없습니다.",403),
