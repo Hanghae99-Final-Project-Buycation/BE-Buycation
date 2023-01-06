@@ -16,10 +16,11 @@ public enum ErrorCode {
     REQUIRED_ALL("모든 항목이 필수값입니다.",400),
     WRONG_IMAGE_FORMAT("파일을 확인해주세요.", 400),
     PASSWORD_MISMATCH("비밀번호가 비밀번호 확인과 일치하지 않습니다",400),
-    DUPLICATE_MEMBER("이미 추가한 유저입니다.", 400),
+    DUPLICATE_APPLICATION("이미 지원한 유저입니다.", 400),
+    DUPLICATE_PARTICIPATION("이미 참가한 유저입니다.", 400),
 
     //404 NOT_FOUND 잘못된 리소스 접근
-    AGIT_NOT_FOUND("존재하지 않는 아지트 입니다.",404),
+    APPLICANT_NOT_FOUND("존재하지 않는 지원자 입니다.",404),
     POSTING_NOT_FOUND("존재하지 않는 게시글 입니다.",404),
     COMMENT_NOT_FOUND("존재하지 않는 댓글 입니다.", 404),
     USERNAME_NOT_FOUND("존재하지 않는 아이디 입니다.",404),
@@ -29,6 +30,7 @@ public enum ErrorCode {
     AUTHORIZATION_DELETE_FAIL("삭제 권한이 없습니다.", 401),
     AUTHORIZATION_UPDATE_FAIL("수정 권한이 없습니다.", 401),
     AUTHORIZATION_CREATE_FAIL("생성 권한이 없습니다.", 401),
+    AUTHORIZATION_DECISION_FAIL("결정 권한이 없습니다.", 401),
     AUTHORIZATION_APPLICANT_LOOKUP_FAIL("지원자 조회 권한이 없습니다.", 401),
 
     //필터부분 에러

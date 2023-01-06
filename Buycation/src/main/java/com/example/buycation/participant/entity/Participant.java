@@ -2,6 +2,7 @@ package com.example.buycation.participant.entity;
 
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.posting.entity.Posting;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,10 @@ public class Participant {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postingId", nullable = false)
     private Posting posting;
+
+    @Builder
+    public Participant(Member member, Posting posting) {
+        this.member = member;
+        this.posting = posting;
+    }
 }
