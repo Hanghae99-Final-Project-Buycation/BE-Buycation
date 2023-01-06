@@ -12,6 +12,7 @@ import com.example.buycation.participant.mapper.ApplicationMapper;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.dto.PostingRequestDto;
 import com.example.buycation.posting.dto.PostingResponseDto;
+import com.example.buycation.posting.entity.Category;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 
 @Service
@@ -34,16 +36,16 @@ public class PostingService {
     private final CommentMapper commentMapper;
     private final ApplicationMapper applicationMapper;
     private final ParticipantRepository participantRepository;
+
     @Transactional
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
         Posting posting = postingMapper.toPosting(postingRequestDto, member);
         postingRepository.save(posting);
 
-        Application application = applicationMapper.toApplication(member,posting);
+        Application application = applicationMapper.toApplication(member, posting);
         Participant participant = applicationMapper.toParticipant(application);
         participantRepository.save(participant);
         posting.add(participant);
-
     }
 
     @Transactional(readOnly = true)
@@ -55,5 +57,34 @@ public class PostingService {
             commentList.add(commentMapper.toResponse(c));
         }
         return postingMapper.toResponse(posting, commentList);
+    }
+
+    @Transactional
+    public void finishPosting(Member member, Long postingId) {
+        Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        if (!posting.getMember().getId().equals(member.getId())) {
+            throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
+        }
+
+        posting.finish(true);
+    }
+
+    @Transactional
+    public void updatePosting(Member member, PostingRequestDto postingRequestDto, Long postingId) {
+        Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        if (!posting.getMember().getId().equals(member.getId())) {
+            throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
+        }
+
+        posting.update(postingRequestDto.getTitle(),
+                postingRequestDto.getAddress(),
+                String.valueOf(Category.valueOf(postingRequestDto.getCategory())),
+                postingRequestDto.getTotalMembers(),
+                postingRequestDto.getDueDate(),
+                postingRequestDto.getBudget(),
+                postingRequestDto.getImage(),
+                postingRequestDto.getContent());
     }
 }

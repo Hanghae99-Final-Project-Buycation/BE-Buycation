@@ -94,6 +94,8 @@ public class ParticipantService {
         participantRepository.save(participant);
         posting.add(participant);
 
+        posting.addMembers(1);
+
         applicationRepository.deleteById(applicationId);
     }
 
@@ -114,7 +116,6 @@ public class ParticipantService {
         }
 
         applicationRepository.deleteById(applicationId);
-
     }
 
     @Transactional
@@ -133,5 +134,7 @@ public class ParticipantService {
         }
 
         participantRepository.deleteById(participant.getId());
+
+        posting.addMembers(-1);
     }
 }

@@ -46,7 +46,7 @@ public class PostingMapper {
                 .content(postingRequestDto.getContent())
                 .member(member)
                 .doneStatus(false)
-                .currentMembers(0)
+                .currentMembers(1)
                 .build();
     }
 }

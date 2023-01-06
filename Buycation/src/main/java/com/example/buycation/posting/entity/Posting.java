@@ -85,7 +85,8 @@ public class Posting extends TimeStamped {
     }
 
     @Builder
-    public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget, String image, String content, Member member, Boolean doneStatus, int currentMembers) {
+    public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget,
+                   String image, String content, Member member, boolean doneStatus, int currentMembers) {
         this.title = title;
         this.address = address;
         this.category = category;
@@ -97,5 +98,25 @@ public class Posting extends TimeStamped {
         this.member = member;
         this.doneStatus = doneStatus;
         this.currentMembers = currentMembers;
+    }
+
+    public void finish(boolean doneStatus){
+        this.doneStatus = doneStatus;
+    }
+
+    public void addMembers(int currentMembers){
+        this.currentMembers += currentMembers;
+    }
+
+    public void update(String title, String address, String category, int totalMembers,
+                       String dueDate, long budget, String image, String content){
+        this.title = title;
+        this.address = address;
+        this.category = category;
+        this.totalMembers = totalMembers;
+        this.dueDate = dueDate;
+        this.budget = budget;
+        this.image = image;
+        this.content = content;
     }
 }
