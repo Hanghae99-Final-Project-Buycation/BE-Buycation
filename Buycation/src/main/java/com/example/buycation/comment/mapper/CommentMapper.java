@@ -14,6 +14,7 @@ public class CommentMapper {
 
     public CommentResponseDto toResponse(Comment comment){
         return CommentResponseDto.builder()
+                .commentId(comment.getId())
                 .memberId(comment.getMember().getId())
                 .nickname(comment.getMember().getNickname())
                 .content(comment.getContent())

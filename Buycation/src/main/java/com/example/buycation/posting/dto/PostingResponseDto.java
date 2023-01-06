@@ -11,6 +11,7 @@ import java.util.List;
 public class PostingResponseDto {
     private Long memberId;
     private String nickname;
+    private String profileImage;
     private Long postingId;
     private String title;
     private String address;
