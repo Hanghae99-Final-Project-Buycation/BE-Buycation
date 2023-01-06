@@ -24,7 +24,7 @@ public enum MessageCode {
     POSTING_DELETE_SUCCESS("게시글 삭제에 성공하였습니다.",200),
 
     //게시글 참가신청 관련
-    APPLICATION_LIST_LOOKUP_SUCCESS("게시글 참가 리스트 조회에 성공하였습니다.",200),
+    APPLICATION_LIST_LOOKUP_SUCCESS("게시글 지원자 리스트 조회에 성공하였습니다.",200),
     POSTING_APPLICATION_SUCCESS("해당 게시글에 참가 신청하였습니다.",200),
     APPLICATION_ACCEPT_SUCCESS("신청을 수락하였습니다.",200),
     APPLICATION_REFUSE_SUCCESS("신청을 거절하였습니다.",200),

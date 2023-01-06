@@ -6,6 +6,9 @@ import com.example.buycation.comment.mapper.CommentMapper;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
+import com.example.buycation.participant.entity.Application;
+import com.example.buycation.participant.mapper.ApplicationMapper;
+import com.example.buycation.participant.repository.ApplicationRepository;
 import com.example.buycation.posting.dto.PostingRequestDto;
 import com.example.buycation.posting.dto.PostingResponseDto;
 import com.example.buycation.posting.entity.Posting;
@@ -28,11 +31,16 @@ public class PostingService {
     private final PostingMapper postingMapper;
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-
+    private final ApplicationRepository applicationRepository;
+    private final ApplicationMapper applicationMapper;
     @Transactional
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
         Posting posting = postingMapper.toPosting(postingRequestDto, member);
         postingRepository.save(posting);
+
+        Application application = applicationMapper.toApplication(member,posting);
+        applicationRepository.save(application);
+        posting.add(application);
     }
 
     @Transactional(readOnly = true)
