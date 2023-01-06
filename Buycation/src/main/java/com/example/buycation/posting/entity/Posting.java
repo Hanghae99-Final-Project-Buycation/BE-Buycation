@@ -53,7 +53,7 @@ public class Posting extends TimeStamped {
     @Column
     private String image;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private String content;
 
     @Column(nullable = false)
