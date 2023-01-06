@@ -39,7 +39,7 @@ public enum MessageCode {
     MEMBER_LOOKUP_SUCCESS("프로필 조회에 성공하였습니다.",200),
     MEMBER_MODIFY_SUCCESS("프로필 수정에 성공하였습니다.",200),
     MY_POSTING_LOOKUP_SUCCESS("내 게시글 조회에 성공하였습니다.",200),
-    PARTICPATION_POSTING_LOOKUP_SUCCESS("참여 게시글 조회에 성공하였습니다.",200),
+    PARTICIPATION_POSTING_LOOKUP_SUCCESS("참여 게시글 조회에 성공하였습니다.",200),
     REVIEW_LIST_LOOKUP_SUCCESS("평점 목록 조회에 성공하였습니다.",200),
     REVIEW_WRITE_SUCCESS("평점 남기기에 성공하였습니다.",200);
 
