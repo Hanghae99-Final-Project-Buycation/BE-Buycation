@@ -18,6 +18,7 @@ import java.util.List;
 import static com.example.buycation.common.MessageCode.APPLICATION_ACCEPT_SUCCESS;
 import static com.example.buycation.common.MessageCode.APPLICATION_LIST_LOOKUP_SUCCESS;
 import static com.example.buycation.common.MessageCode.APPLICATION_REFUSE_SUCCESS;
+import static com.example.buycation.common.MessageCode.POSTING_APPLICATION_CANCEL_SUCCESS;
 import static com.example.buycation.common.MessageCode.POSTING_APPLICATION_SUCCESS;
 
 @RestController
@@ -57,4 +58,10 @@ public class ParticipantController {
         return new ResponseMessage<>(APPLICATION_REFUSE_SUCCESS, null);
     }
 
+    @DeleteMapping("/posting/{postingId}")
+    public ResponseMessage<?> cancelParticipation(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                              @PathVariable Long postingId) {
+        participantService.cancelParticipation(userDetails.getMember(), postingId);
+        return new ResponseMessage<>(POSTING_APPLICATION_CANCEL_SUCCESS, null);
+    }
 }
