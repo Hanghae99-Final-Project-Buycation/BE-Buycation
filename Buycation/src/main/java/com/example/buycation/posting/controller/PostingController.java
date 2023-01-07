@@ -1,6 +1,7 @@
 package com.example.buycation.posting.controller;
 
 import com.example.buycation.common.ResponseMessage;
+import com.example.buycation.posting.dto.MainPostingResponseDto;
 import com.example.buycation.posting.dto.PostingRequestDto;
 import com.example.buycation.posting.dto.PostingResponseDto;
 import com.example.buycation.posting.service.PostingService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static com.example.buycation.common.MessageCode.POSTING_CREATE_SUCCESS;
 import static com.example.buycation.common.MessageCode.POSTING_DELETE_SUCCESS;
@@ -35,6 +38,12 @@ public class PostingController {
                                             @RequestBody PostingRequestDto postingRequestDto) {
         postingService.createPosting(postingRequestDto, userDetails.getMember());
         return new ResponseMessage<>(POSTING_CREATE_SUCCESS, null);
+    }
+
+    @GetMapping("")
+    public ResponseMessage<List<MainPostingResponseDto>> getPostingList(){
+        List<MainPostingResponseDto> postingList = postingService.getPostingList();
+        return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
     }
 
     @GetMapping("/{postingId}")

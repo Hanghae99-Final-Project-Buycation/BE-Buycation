@@ -18,6 +18,8 @@ public enum ErrorCode {
     PASSWORD_MISMATCH("비밀번호가 비밀번호 확인과 일치하지 않습니다",400),
     DUPLICATE_APPLICATION("이미 지원한 유저입니다.", 400),
     DUPLICATE_PARTICIPATION("이미 참가한 유저입니다.", 400),
+    FINISH_PARTICIPATION("목표 참가자 수만큼 모집이되었입니다.", 400),
+    POSTING_RECRUITMENT_SUCCESS_ERROR("모집이 완료된 게시글입니다.",400),
 
 
     //404 NOT_FOUND 잘못된 리소스 접근
