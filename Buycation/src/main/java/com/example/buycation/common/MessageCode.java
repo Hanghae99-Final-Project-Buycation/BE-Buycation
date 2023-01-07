@@ -20,7 +20,7 @@ public enum MessageCode {
     CATEGORY_LOOKUP_SUCCESS("카테고리 조회에 성공하였습니다.",200),
     POSTING_CREATE_SUCCESS("게시글 작성에 성공하였습니다.",200),
     POSTING_RECRUITMENT_SUCCESS("모집을 완료하였습니다.",200),
-    POSTING_MODIFY_SUCCESS("게시글 수정에 성공하였습니다.",200),
+    POSTING_UPDATE_SUCCESS("게시글 수정에 성공하였습니다.",200),
     POSTING_DELETE_SUCCESS("게시글 삭제에 성공하였습니다.",200),
 
     //게시글 참가신청 관련
