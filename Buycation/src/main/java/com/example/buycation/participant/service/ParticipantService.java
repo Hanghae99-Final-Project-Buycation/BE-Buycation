@@ -22,8 +22,10 @@ import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_APP
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DECISION_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_APPLICATION;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_PARTICIPATION;
+import static com.example.buycation.common.exception.ErrorCode.FINISH_PARTICIPATION;
 import static com.example.buycation.common.exception.ErrorCode.PARTICIPANT_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
+import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
 import static com.example.buycation.common.exception.ErrorCode.WRITER_PARTICIPATION_CANAEL;
 
 @Service
@@ -38,6 +40,11 @@ public class ParticipantService {
     @Transactional
     public void createApplicant(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        //완료된 게시글 신청 금지
+        if(posting.isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
 
         //작성자 지원신청 금지
         if (posting.getMember().getId().equals(member.getId())){
@@ -78,6 +85,11 @@ public class ParticipantService {
     public void applicantAccept(Member member, Long postingId, Long applicationId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
+        //완료된 게시글 신청 금지
+        if(posting.isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
+
         //작성자만 결정 권한
         if (!posting.getMember().getId().equals(member.getId())){
             throw new CustomException(AUTHORIZATION_DECISION_FAIL);
@@ -88,6 +100,10 @@ public class ParticipantService {
         //지원 수락된 참가자 중복수락 금지
         if (participantRepository.findByPostingAndMember(application.getPosting(), application.getMember()) != null){
             throw new CustomException(DUPLICATE_PARTICIPATION);
+        }
+
+        if (posting.getCurrentMembers()==posting.getTotalMembers()){
+            throw new CustomException(FINISH_PARTICIPATION);
         }
 
         Participant participant = applicationMapper.toParticipant(application);
@@ -121,6 +137,11 @@ public class ParticipantService {
     @Transactional
     public void cancelParticipation(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        //완료된 게시글 신청 금지
+        if(posting.isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
 
         //게시글 작성자 참가취소 금지
         if (posting.getMember().getId().equals(member.getId())){

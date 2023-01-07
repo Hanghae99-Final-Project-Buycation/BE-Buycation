@@ -11,6 +11,7 @@ import com.example.buycation.participant.entity.Participant;
 import com.example.buycation.participant.mapper.ApplicationMapper;
 import com.example.buycation.participant.repository.ApplicationRepository;
 import com.example.buycation.participant.repository.ParticipantRepository;
+import com.example.buycation.posting.dto.MainPostingResponseDto;
 import com.example.buycation.posting.dto.PostingRequestDto;
 import com.example.buycation.posting.dto.PostingResponseDto;
 import com.example.buycation.posting.entity.Category;
@@ -27,6 +28,7 @@ import java.util.List;
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DELETE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
+import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +51,16 @@ public class PostingService {
         Participant participant = applicationMapper.toParticipant(application);
         participantRepository.save(participant);
         posting.add(participant);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MainPostingResponseDto> getPostingList() {
+        List<Posting> postings = postingRepository.findAll();
+        List<MainPostingResponseDto> postingList = new ArrayList<>();
+        for (Posting p : postings) {
+            postingList.add(postingMapper.toResponse(p));
+        }
+        return postingList;
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +89,11 @@ public class PostingService {
     public void updatePosting(Member member, PostingRequestDto postingRequestDto, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
+        //완료된 게시글 신청 금지
+        if(posting.isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
+
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -94,6 +111,11 @@ public class PostingService {
     @Transactional
     public void deletePosting(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        //완료된 게시글 신청 금지
+        if(posting.isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
 
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_DELETE_FAIL);

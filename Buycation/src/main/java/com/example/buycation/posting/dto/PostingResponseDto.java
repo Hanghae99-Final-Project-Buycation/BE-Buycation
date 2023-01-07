@@ -19,6 +19,7 @@ public class PostingResponseDto {
     private String image;
     private String dueDate;
     private long budget;
+    private long perBudget;
     private int totalMembers;
     private int currentMembers;
     private String createdAt;

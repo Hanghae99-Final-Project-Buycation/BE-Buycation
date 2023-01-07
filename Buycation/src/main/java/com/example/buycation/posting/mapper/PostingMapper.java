@@ -2,6 +2,7 @@ package com.example.buycation.posting.mapper;
 
 import com.example.buycation.comment.dto.CommentResponseDto;
 import com.example.buycation.members.member.entity.Member;
+import com.example.buycation.posting.dto.MainPostingResponseDto;
 import com.example.buycation.posting.dto.PostingRequestDto;
 import com.example.buycation.posting.dto.PostingResponseDto;
 import com.example.buycation.posting.entity.Category;
@@ -18,6 +19,7 @@ public class PostingMapper {
         return PostingResponseDto.builder()
                 .memberId(posting.getMember().getId())
                 .nickname(posting.getMember().getNickname())
+                .profileImage(posting.getMember().getProfileImage())
                 .postingId(posting.getId())
                 .title(posting.getTitle())
                 .address(posting.getAddress())
@@ -25,12 +27,27 @@ public class PostingMapper {
                 .image(posting.getImage())
                 .dueDate(posting.getDueDate())
                 .budget(posting.getBudget())
+                .perBudget((posting.getBudget())/(posting.getTotalMembers()))
                 .totalMembers(posting.getTotalMembers())
                 .currentMembers(posting.getCurrentMembers())
                 .createdAt(posting.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .category(posting.getCategory())
                 .commentList(commentList)
                 .doneStatus(posting.isDoneStatus())
+                .build();
+    }
+
+    public MainPostingResponseDto toResponse(Posting posting){
+        return MainPostingResponseDto.builder()
+                .postingId(posting.getId())
+                .title(posting.getTitle())
+                .address(posting.getAddress())
+                .image(posting.getImage())
+                .dueDate(posting.getDueDate())
+                .perBudget((posting.getBudget())/(posting.getTotalMembers()))
+                .totalMembers(posting.getTotalMembers())
+                .currentMembers(posting.getCurrentMembers())
+                .category(posting.getCategory())
                 .build();
     }
 
