@@ -27,7 +27,7 @@ public class PostingMapper {
                 .budget(posting.getBudget())
                 .totalMembers(posting.getTotalMembers())
                 .currentMembers(posting.getCurrentMembers())
-                .createdAt(posting.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")))
+                .createdAt(posting.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .category(posting.getCategory())
                 .commentList(commentList)
                 .doneStatus(posting.isDoneStatus())
