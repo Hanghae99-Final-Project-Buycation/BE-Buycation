@@ -18,7 +18,7 @@ public class CommentMapper {
                 .memberId(comment.getMember().getId())
                 .nickname(comment.getMember().getNickname())
                 .content(comment.getContent())
-                .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")))
+                .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
     public Comment toComment(CommentRequestDto commentRequestDto, Member member, Posting posting){

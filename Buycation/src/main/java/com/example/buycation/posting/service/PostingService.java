@@ -9,6 +9,7 @@ import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.participant.entity.Application;
 import com.example.buycation.participant.entity.Participant;
 import com.example.buycation.participant.mapper.ApplicationMapper;
+import com.example.buycation.participant.repository.ApplicationRepository;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.dto.PostingRequestDto;
 import com.example.buycation.posting.dto.PostingResponseDto;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DELETE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 
@@ -36,6 +38,7 @@ public class PostingService {
     private final CommentMapper commentMapper;
     private final ApplicationMapper applicationMapper;
     private final ParticipantRepository participantRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
@@ -86,5 +89,23 @@ public class PostingService {
                 postingRequestDto.getBudget(),
                 postingRequestDto.getImage(),
                 postingRequestDto.getContent());
+    }
+
+    @Transactional
+    public void deletePosting(Member member, Long postingId) {
+        Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        if (!posting.getMember().getId().equals(member.getId())) {
+            throw new CustomException(AUTHORIZATION_DELETE_FAIL);
+        }
+
+        List<Comment> comments = commentRepository.findAllByPosting(posting);
+        if (!comments.isEmpty()){commentRepository.deleteAllByIdInQuery(comments);}
+        List<Application> applications = applicationRepository.findAllByPosting(posting);
+        if (!applications.isEmpty()){applicationRepository.deleteAllByIdInQuery(applications);}
+        List<Participant> participants = participantRepository.findAllByPosting(posting);
+        if (!participants.isEmpty()){participantRepository.deleteAllByIdInQuery(participants);}
+
+        postingRepository.deleteById(postingId);
     }
 }
