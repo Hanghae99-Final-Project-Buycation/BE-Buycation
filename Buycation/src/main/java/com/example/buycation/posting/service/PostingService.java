@@ -89,7 +89,7 @@ public class PostingService {
     public void updatePosting(Member member, PostingRequestDto postingRequestDto, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
-        //완료된 게시글 신청 금지
+        //완료된 게시글 수정 금지
         if(posting.isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
@@ -112,7 +112,7 @@ public class PostingService {
     public void deletePosting(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
-        //완료된 게시글 신청 금지
+        //완료된 게시글 삭제 금지
         if(posting.isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }

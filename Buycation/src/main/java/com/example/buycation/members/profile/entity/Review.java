@@ -2,6 +2,7 @@ package com.example.buycation.members.profile.entity;
 
 import com.example.buycation.common.TimeStamped;
 import com.example.buycation.members.member.entity.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,11 @@ public class Review extends TimeStamped {
     @JoinColumn(name = "memberId",nullable = false)
     private Member member;
 
+    @Builder
+    public Review(int reviewScore, Long postingId, Long reviewerId, Member member) {
+        this.reviewScore = reviewScore;
+        this.postingId = postingId;
+        this.reviewerId = reviewerId;
+        this.member = member;
+    }
 }

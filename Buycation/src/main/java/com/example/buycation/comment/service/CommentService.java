@@ -16,6 +16,7 @@ import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DEL
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.COMMENT_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
+import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,12 @@ public class CommentService {
     @Transactional
     public void createComment(CommentRequestDto commentRequestDto, Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+
+        //완료된 게시글 댓글작성 금지
+        if(posting.isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
+
         Comment comment = commentMapper.toComment(commentRequestDto, member, posting);
         commentRepository.save(comment);
         posting.add(comment);
@@ -37,6 +44,12 @@ public class CommentService {
     @Transactional
     public void updateComment(CommentRequestDto commentRequestDto, Long commentId, Member member) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
+
+        //완료된 게시글 댓글수정 금지
+        if(comment.getPosting().isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
+
         if (!comment.getMember().getId().equals(member.getId())){
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -46,6 +59,12 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId, Member member) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
+
+        //완료된 게시글 댓글삭제 금지
+        if(comment.getPosting().isDoneStatus()){
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
+
         if (!comment.getMember().getId().equals(member.getId())){
             throw new CustomException(AUTHORIZATION_DELETE_FAIL);
         }

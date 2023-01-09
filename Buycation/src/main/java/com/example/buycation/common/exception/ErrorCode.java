@@ -20,6 +20,10 @@ public enum ErrorCode {
     DUPLICATE_PARTICIPATION("이미 참가한 유저입니다.", 400),
     FINISH_PARTICIPATION("목표 참가자 수만큼 모집이되었입니다.", 400),
     POSTING_RECRUITMENT_SUCCESS_ERROR("모집이 완료된 게시글입니다.",400),
+    SELF_REVIEW_ERROR("자기 자신에게 후기를 남길 수 없습니다.",400),
+    POSTING_PARTICIPANT_REVIEW("게시글 참가자만 리뷰를 남길 수 있습니다.",400),
+    DUPLICATE_REVIEW("같은 멤버에게 중복 리뷰는 불가능합니다.",400),
+    POSTING_SUCCESS_ERROR("구인 완료가 되지않은 게시물입니다.",400),
 
 
     //404 NOT_FOUND 잘못된 리소스 접근
@@ -27,6 +31,7 @@ public enum ErrorCode {
     POSTING_NOT_FOUND("존재하지 않는 게시글 입니다.",404),
     COMMENT_NOT_FOUND("존재하지 않는 댓글 입니다.", 404),
     USERNAME_NOT_FOUND("존재하지 않는 아이디 입니다.",404),
+    MEMBER_NOT_FOUND("존재하지 않는 아이디 입니다.",404),
     PARTICIPANT_NOT_FOUND("존재하지 않는 참가자 입니다.",404),
     INCORRECT_PASSWORD("비밀번호가 일치하지 않습니다.",404),
 
