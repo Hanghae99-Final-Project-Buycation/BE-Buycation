@@ -30,6 +30,9 @@ public class Member {
     @Column(nullable = false)
     private int userScore;
 
+    @Column(nullable = false)
+    private int reviewCount;
+
     @Column
     private String profileImage;
 
@@ -42,6 +45,11 @@ public class Member {
         this.password = password;
         this.nickname = nickname;
         this.address = address;
+    }
+
+    public void addScore(int userScore, int reviewCount) {
+        this.userScore += userScore;
+        this.reviewCount += reviewCount;
     }
 }
 

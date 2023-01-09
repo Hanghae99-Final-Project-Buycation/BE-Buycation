@@ -85,7 +85,7 @@ public class ParticipantService {
     public void applicantAccept(Member member, Long postingId, Long applicationId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
-        //완료된 게시글 신청 금지
+        //완료된 게시글 수락 금지
         if(posting.isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
@@ -138,7 +138,7 @@ public class ParticipantService {
     public void cancelParticipation(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
-        //완료된 게시글 신청 금지
+        //완료된 게시글 참가취소 금지
         if(posting.isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
