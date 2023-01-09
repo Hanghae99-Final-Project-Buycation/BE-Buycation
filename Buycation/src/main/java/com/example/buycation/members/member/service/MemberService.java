@@ -64,4 +64,12 @@ public class MemberService {
         }
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getEmail()));
     }
+
+    @Transactional(readOnly = true)
+    public void checkNickname(String nickname) {
+        Optional<Member> nicknameCheck = memberRepository.findByNickname(nickname);
+        if (nicknameCheck.isPresent()) {
+            throw new CustomException(DUPLICATE_NICKNAME);
+        }
+    }
 }
