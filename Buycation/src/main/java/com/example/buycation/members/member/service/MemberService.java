@@ -71,6 +71,5 @@ public class MemberService {
         if (nicknameCheck.isPresent()) {
             throw new CustomException(DUPLICATE_NICKNAME);
         }
-        memberRepository.findByNickname(nickname);
     }
 }
