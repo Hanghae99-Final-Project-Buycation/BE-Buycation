@@ -18,4 +18,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     @Modifying
     @Query("delete from Participant p where p in :participants")
     void deleteAllByIdInQuery(@Param("participants") List<Participant> participants);
+
+    List<Participant> findAllByMember(Member member);
 }

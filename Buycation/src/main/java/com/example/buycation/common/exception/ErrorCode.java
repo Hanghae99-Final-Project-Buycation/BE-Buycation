@@ -39,6 +39,7 @@ public enum ErrorCode {
     AUTHORIZATION_DELETE_FAIL("삭제 권한이 없습니다.", 401),
     AUTHORIZATION_UPDATE_FAIL("수정 권한이 없습니다.", 401),
     AUTHORIZATION_DECISION_FAIL("결정 권한이 없습니다.", 401),
+    AUTHORIZATION_LOOKUP_FAIL("조회 권한이 없습니다.", 401),
     AUTHORIZATION_APPLICANT_LOOKUP_FAIL("지원자 조회 권한이 없습니다.", 401),
     WRITER_PARTICIPATION_CANAEL("작성자는 참가취소를 할 수 없습니다. 게시글을 삭제하여 주세요.", 401),
 
