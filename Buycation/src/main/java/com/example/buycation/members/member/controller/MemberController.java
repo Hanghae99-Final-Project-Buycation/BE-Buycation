@@ -20,20 +20,20 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseMessage<?> signup(@RequestBody SignupRequestDto signupRequestDto) {
+    public ResponseMessage<MessageCode> signup(@RequestBody SignupRequestDto signupRequestDto) {
         memberService.signup(signupRequestDto);
-        return new ResponseMessage<MessageCode>(MEMBER_SIGNUP_SUCCESS, null);
+        return new ResponseMessage<>(MEMBER_SIGNUP_SUCCESS, null);
     }
 
     @PostMapping("/login")
-    public ResponseMessage<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseMessage<MessageCode> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         memberService.login(loginRequestDto, response);
-        return new ResponseMessage<MessageCode>(MEMBER_LOGIN_SUCCESS, null);
+        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, null);
     }
 
     @GetMapping("/signup")
-    public ResponseMessage<?> checkNickname(@RequestParam("nickname") String nickname) {
+    public ResponseMessage<MessageCode> checkNickname(@RequestParam("nickname") String nickname) {
         memberService.checkNickname(nickname);
-        return new ResponseMessage<MessageCode>(NICKNAME_CHECK_SUCCESS, null);
+        return new ResponseMessage<>(NICKNAME_CHECK_SUCCESS, null);
     }
 }
