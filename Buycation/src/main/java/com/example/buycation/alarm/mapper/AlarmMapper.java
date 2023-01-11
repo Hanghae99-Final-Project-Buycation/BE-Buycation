@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 public class AlarmMapper {
     public AlarmResponseDto toAlarmResponseDto(Alarm alarm){
         return AlarmResponseDto.builder()
+                .postingId(alarm.getPostingId())
                 .message(alarm.getMessage())
                 .type(alarm.getType())
                 .createdAt(alarm.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))

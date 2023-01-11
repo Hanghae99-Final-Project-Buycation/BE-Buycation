@@ -4,6 +4,6 @@ public enum AlarmType {
     POSTING,
     CHAT,
     COMMENT,
-    PARTICIPANT,
+    APPLICATION,
     PARTICIPATION
 }

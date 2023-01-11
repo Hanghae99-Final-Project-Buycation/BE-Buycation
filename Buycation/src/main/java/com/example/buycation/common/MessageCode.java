@@ -41,8 +41,13 @@ public enum MessageCode {
     MY_POSTING_LOOKUP_SUCCESS("내 게시글 조회에 성공하였습니다.",200),
     PARTICIPATION_POSTING_LOOKUP_SUCCESS("참여 게시글 조회에 성공하였습니다.",200),
     REVIEW_LIST_LOOKUP_SUCCESS("평점 목록 조회에 성공하였습니다.",200),
-    REVIEW_WRITE_SUCCESS("평점 남기기에 성공하였습니다.",200);
+    REVIEW_WRITE_SUCCESS("평점 남기기에 성공하였습니다.",200),
 
+    //알람 관련
+    ALARM_SEARCH_SUCCESS("알림목록 조회에 성공하였습니다.", 200),
+    ALARM_READ_SUCCESS("알림 읽기 처리에 성공하였습니다.", 200),
+    ALARM_DELETE_SUCCESS("알림 삭제에 성공하였습니다.", 200),
+    ALARM_COUNT_SUCCESS("알림 갯수 조회 성공하였습니다.", 200);
     private final String msg;
     private final int statusCode;
 }

@@ -1,5 +1,8 @@
 package com.example.buycation.participant.service;
 
+import com.example.buycation.alarm.dto.AlarmResponseDto;
+import com.example.buycation.alarm.entity.AlarmType;
+import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.participant.dto.ApplicationResponseDto;
@@ -36,6 +39,7 @@ public class ParticipantService {
     private final PostingRepository postingRepository;
     private final ApplicationMapper applicationMapper;
     private final ParticipantRepository participantRepository;
+    private final AlarmService alarmService;
 
     @Transactional
     public void createApplicant(Member member, Long postingId) {
@@ -58,10 +62,10 @@ public class ParticipantService {
         if (participantRepository.findByPostingAndMember(posting, member) != null){
             throw new CustomException(DUPLICATE_PARTICIPATION);
         }
-
         Application application = applicationMapper.toApplication(member,posting);
         applicationRepository.save(application);
         posting.add(application);
+        alarmService.createAlarm(posting.getMember(), AlarmType.PARTICIPANT, postingId, "new application for your posting from memberId " + member.getId());
     }
 
     @Transactional(readOnly = true)
@@ -113,6 +117,8 @@ public class ParticipantService {
         posting.addMembers(1);
 
         applicationRepository.deleteById(applicationId);
+
+        alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is accepted");
     }
 
     @Transactional
@@ -132,6 +138,7 @@ public class ParticipantService {
         }
 
         applicationRepository.deleteById(applicationId);
+        alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is reject");
     }
 
     @Transactional

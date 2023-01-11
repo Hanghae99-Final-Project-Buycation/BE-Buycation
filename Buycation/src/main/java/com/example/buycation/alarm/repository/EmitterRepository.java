@@ -1,6 +1,7 @@
 package com.example.buycation.alarm.repository;
 
 
+import com.example.buycation.participant.repository.ApplicationRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -19,6 +20,7 @@ public class EmitterRepository {
     };
 
     public void saveEventCache(String eventCacheId, Object event){
+
         eventCache.put(eventCacheId, event);
     }
 

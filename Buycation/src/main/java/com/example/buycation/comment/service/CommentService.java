@@ -1,5 +1,7 @@
 package com.example.buycation.comment.service;
 
+import com.example.buycation.alarm.entity.AlarmType;
+import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.dto.CommentRequestDto;
 import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.mapper.CommentMapper;
@@ -25,6 +27,8 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final PostingRepository postingRepository;
 
+    private final AlarmService alarmService;
+
 
     @Transactional
     public void createComment(CommentRequestDto commentRequestDto, Member member, Long postingId) {
@@ -32,6 +36,9 @@ public class CommentService {
         Comment comment = commentMapper.toComment(commentRequestDto, member, posting);
         commentRepository.save(comment);
         posting.add(comment);
+        if(!posting.getMember().getId().equals(member.getId())) {
+            alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, "new comment at " + posting.getTitle());
+        }
     }
 
     @Transactional
