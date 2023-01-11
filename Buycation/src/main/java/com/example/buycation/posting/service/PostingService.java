@@ -30,6 +30,8 @@ import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DEL
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
+import static com.example.buycation.common.exception.ErrorCode.WRONG_CATEGORY_ERROR;
+import static com.example.buycation.common.exception.ErrorCode.WRONG_SORT_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +61,9 @@ public class PostingService {
         List<Posting> postings = postingRepository.findAllByOrderByCreatedAtDesc();
         List<MainPostingResponseDto> postingList = new ArrayList<>();
         for (Posting p : postings) {
-            postingList.add(postingMapper.toResponse(p));
+            if (!p.isDoneStatus()) {
+                postingList.add(postingMapper.toResponse(p));
+            }
         }
         return postingList;
     }
@@ -140,20 +144,30 @@ public class PostingService {
 
     @Transactional(readOnly = true)
     public List<MainPostingResponseDto> searchPosting(String category, String search, String sort) {
-        Sort sort1 = switch (sort) {
+        Sort sortCheck = switch (sort) {
             case "금액 순" -> Sort.by(Sort.Direction.ASC, "perBudget");
             case "인원 순" -> Sort.by(Sort.Direction.ASC, "totalMembers");
             case "기한 순" -> Sort.by(Sort.Direction.ASC, "dueDate");
-            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case "최신 순" -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case "" -> Sort.by(Sort.Direction.DESC, "createdAt");
+            default -> throw new CustomException(WRONG_SORT_ERROR);
         };
-        List<Posting> postings = postingRepository.findAllByQuery(category, search, sort1);
+        String categoryCheck = switch (category) {
+            case "전체" -> "";
+            case "음식" -> "음식";
+            case "물건" -> "물건";
+            case "" -> "";
+            default -> throw new CustomException(WRONG_CATEGORY_ERROR);
+        };
+        if (search.contains("%") || search.contains("_")) {
+            search = search.replace("%", "|%");
+            search = search.replace("_", "|_");
+        }
+        List<Posting> postings = postingRepository.findAllByQuery(categoryCheck, search, sortCheck);
         List<MainPostingResponseDto> postingList = new ArrayList<>();
         for (Posting p : postings) {
-            if (!p.isDoneStatus()) {
-                postingList.add(postingMapper.toResponse(p));
-            }
+            postingList.add(postingMapper.toResponse(p));
         }
-
         return postingList;
     }
 }

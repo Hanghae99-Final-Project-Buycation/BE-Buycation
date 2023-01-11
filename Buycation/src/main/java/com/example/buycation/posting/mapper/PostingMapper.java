@@ -49,6 +49,8 @@ public class PostingMapper {
                 .currentMembers(posting.getCurrentMembers())
                 .category(posting.getCategory())
                 .doneStatus(posting.isDoneStatus())
+                .coordsX(posting.getCoordsX())
+                .coordsY(posting.getCoordsY())
                 .build();
     }
 
@@ -66,6 +68,8 @@ public class PostingMapper {
                 .member(member)
                 .doneStatus(false)
                 .currentMembers(1)
+                .coordsX(postingRequestDto.getCoordsX())
+                .coordsY(postingRequestDto.getCoordsY())
                 .build();
     }
 }

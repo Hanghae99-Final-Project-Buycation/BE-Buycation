@@ -62,6 +62,12 @@ public class Posting extends TimeStamped {
     @Column(nullable = false)
     private boolean doneStatus;
 
+    @Column(nullable = false)
+    private double coordsX;
+
+    @Column(nullable = false)
+    private double coordsY;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId", nullable = false)
     private Member member;
@@ -88,8 +94,8 @@ public class Posting extends TimeStamped {
     }
 
     @Builder
-    public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget,
-                   long perBudget, String image, String content, Member member, boolean doneStatus, int currentMembers) {
+    public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget, long perBudget,
+                   String image, String content, Member member, boolean doneStatus, int currentMembers, double coordsX, double coordsY ) {
         this.title = title;
         this.address = address;
         this.category = category;
@@ -102,6 +108,8 @@ public class Posting extends TimeStamped {
         this.member = member;
         this.doneStatus = doneStatus;
         this.currentMembers = currentMembers;
+        this.coordsX = coordsX;
+        this.coordsY = coordsY;
     }
 
     public void finish(boolean doneStatus) {

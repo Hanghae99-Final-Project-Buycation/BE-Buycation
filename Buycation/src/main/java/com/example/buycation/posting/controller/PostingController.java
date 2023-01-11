@@ -48,8 +48,8 @@ public class PostingController {
     }
 
     @GetMapping("/serach")
-    public ResponseMessage<List<MainPostingResponseDto>> searchPosting(@RequestParam("category") String category,
-                                                                       @RequestParam("search") String search,
+    public ResponseMessage<List<MainPostingResponseDto>> searchPosting(@RequestParam("search") String search,
+                                                                       @RequestParam("category") String category,
                                                                        @RequestParam("sort") String sort){
         List<MainPostingResponseDto> postingList = postingService.searchPosting(category, search, sort);
         return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
