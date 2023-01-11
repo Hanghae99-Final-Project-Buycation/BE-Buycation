@@ -22,6 +22,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
+    env:
+      working-directory: ./Buycation
 
     steps:
     - name: Checkout
@@ -36,7 +38,7 @@ jobs:
     - name: Copy Secret1
       env:
         OCCUPY_SECRET1: ${{ secrets.OCCUPY_SECRET1 }}
-        OCCUPY_SECRET1_DIR: Buycation/src/main/resources
+        OCCUPY_SECRET1_DIR: src/main/resources
         OCCUPY_SECRET1_DIR_FILE_NAME: application-private.properties
       run: echo $OCCUPY_SECRET1 | base64 --decode > $OCCUPY_SECRET1_DIR/$OCCUPY_SECRET1_DIR_FILE_NAME
 
