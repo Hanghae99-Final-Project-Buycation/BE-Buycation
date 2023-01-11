@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -43,6 +44,14 @@ public class PostingController {
     @GetMapping("")
     public ResponseMessage<List<MainPostingResponseDto>> getPostingList(){
         List<MainPostingResponseDto> postingList = postingService.getPostingList();
+        return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
+    }
+
+    @GetMapping("/serach")
+    public ResponseMessage<List<MainPostingResponseDto>> searchPosting(@RequestParam("category") String category,
+                                                                       @RequestParam("search") String search,
+                                                                       @RequestParam("sort") String sort){
+        List<MainPostingResponseDto> postingList = postingService.searchPosting(category, search, sort);
         return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
     }
 
