@@ -21,8 +21,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./Buycation
+    environment: production
 
     steps:
     - name: Checkout
@@ -37,12 +36,12 @@ jobs:
     - name: Copy Secret1
       env:
         OCCUPY_SECRET1: ${{ secrets.OCCUPY_SECRET1 }}
-        OCCUPY_SECRET1_DIR: src/main/resources
+        OCCUPY_SECRET1_DIR: Buycation/src/main/resources
         OCCUPY_SECRET1_DIR_FILE_NAME: application-private.properties
       run: echo $OCCUPY_SECRET1 | base64 --decode > $OCCUPY_SECRET1_DIR/$OCCUPY_SECRET1_DIR_FILE_NAME
 
     - name: Grant execute permission for gradlew
-      run: cd Buycation | chmod +x gradlew
+      run: cd ./Buycation | chmod +x gradlew
       
     - name: Build with Gradle
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
@@ -63,7 +62,6 @@ jobs:
           --ignore-hidden-files \
           --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
           --source .
-
     - name: Deploy to AWS EC2 from S3
       run: |
         aws deploy create-deployment \
