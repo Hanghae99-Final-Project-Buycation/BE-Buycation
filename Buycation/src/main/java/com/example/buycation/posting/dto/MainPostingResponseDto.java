@@ -15,4 +15,5 @@ public class MainPostingResponseDto {
     private int currentMembers;
     private String address;
     private String category;
+    private boolean doneStatus;
 }

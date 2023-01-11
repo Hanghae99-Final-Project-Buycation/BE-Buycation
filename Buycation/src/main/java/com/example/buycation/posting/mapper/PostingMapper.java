@@ -44,10 +44,11 @@ public class PostingMapper {
                 .address(posting.getAddress())
                 .image(posting.getImage())
                 .dueDate(posting.getDueDate())
-                .perBudget((posting.getBudget())/(posting.getTotalMembers()))
+                .perBudget(posting.getPerBudget())
                 .totalMembers(posting.getTotalMembers())
                 .currentMembers(posting.getCurrentMembers())
                 .category(posting.getCategory())
+                .doneStatus(posting.isDoneStatus())
                 .build();
     }
 
@@ -58,6 +59,7 @@ public class PostingMapper {
                 .totalMembers(postingRequestDto.getTotalMembers())
                 .address(postingRequestDto.getAddress())
                 .budget(postingRequestDto.getBudget())
+                .perBudget(postingRequestDto.getBudget()/postingRequestDto.getTotalMembers())
                 .dueDate(postingRequestDto.getDueDate())
                 .image(postingRequestDto.getImage())
                 .content(postingRequestDto.getContent())

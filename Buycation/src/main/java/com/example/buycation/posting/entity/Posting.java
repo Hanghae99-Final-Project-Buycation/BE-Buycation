@@ -50,6 +50,9 @@ public class Posting extends TimeStamped {
     @Column(nullable = false)
     private long budget;
 
+    @Column(nullable = false)
+    private long perBudget;
+
     @Column
     private String image;
 
@@ -86,13 +89,14 @@ public class Posting extends TimeStamped {
 
     @Builder
     public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget,
-                   String image, String content, Member member, boolean doneStatus, int currentMembers) {
+                   long perBudget, String image, String content, Member member, boolean doneStatus, int currentMembers) {
         this.title = title;
         this.address = address;
         this.category = category;
         this.totalMembers = totalMembers;
         this.dueDate = dueDate;
         this.budget = budget;
+        this.perBudget = perBudget;
         this.image = image;
         this.content = content;
         this.member = member;
@@ -100,16 +104,16 @@ public class Posting extends TimeStamped {
         this.currentMembers = currentMembers;
     }
 
-    public void finish(boolean doneStatus){
+    public void finish(boolean doneStatus) {
         this.doneStatus = doneStatus;
     }
 
-    public void addMembers(int currentMembers){
+    public void addMembers(int currentMembers) {
         this.currentMembers += currentMembers;
     }
 
     public void update(String title, String address, String category, int totalMembers,
-                       String dueDate, long budget, String image, String content){
+                       String dueDate, long budget, String image, String content) {
         this.title = title;
         this.address = address;
         this.category = category;

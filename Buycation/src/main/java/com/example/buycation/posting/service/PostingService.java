@@ -19,6 +19,7 @@ import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +56,7 @@ public class PostingService {
 
     @Transactional(readOnly = true)
     public List<MainPostingResponseDto> getPostingList() {
-        List<Posting> postings = postingRepository.findAll();
+        List<Posting> postings = postingRepository.findAllByOrderByCreatedAtDesc();
         List<MainPostingResponseDto> postingList = new ArrayList<>();
         for (Posting p : postings) {
             postingList.add(postingMapper.toResponse(p));
@@ -90,7 +91,7 @@ public class PostingService {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
         //완료된 게시글 수정 금지
-        if(posting.isDoneStatus()){
+        if (posting.isDoneStatus()) {
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
 
@@ -113,7 +114,7 @@ public class PostingService {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
         //완료된 게시글 삭제 금지
-        if(posting.isDoneStatus()){
+        if (posting.isDoneStatus()) {
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
 
@@ -122,12 +123,37 @@ public class PostingService {
         }
 
         List<Comment> comments = commentRepository.findAllByPosting(posting);
-        if (!comments.isEmpty()){commentRepository.deleteAllByIdInQuery(comments);}
+        if (!comments.isEmpty()) {
+            commentRepository.deleteAllByIdInQuery(comments);
+        }
         List<Application> applications = applicationRepository.findAllByPosting(posting);
-        if (!applications.isEmpty()){applicationRepository.deleteAllByIdInQuery(applications);}
+        if (!applications.isEmpty()) {
+            applicationRepository.deleteAllByIdInQuery(applications);
+        }
         List<Participant> participants = participantRepository.findAllByPosting(posting);
-        if (!participants.isEmpty()){participantRepository.deleteAllByIdInQuery(participants);}
+        if (!participants.isEmpty()) {
+            participantRepository.deleteAllByIdInQuery(participants);
+        }
 
         postingRepository.deleteById(postingId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MainPostingResponseDto> searchPosting(String category, String search, String sort) {
+        Sort sort1 = switch (sort) {
+            case "금액 순" -> Sort.by(Sort.Direction.ASC, "perBudget");
+            case "인원 순" -> Sort.by(Sort.Direction.ASC, "totalMembers");
+            case "기한 순" -> Sort.by(Sort.Direction.ASC, "dueDate");
+            default -> Sort.by(Sort.Direction.DESC, "createdAt");
+        };
+        List<Posting> postings = postingRepository.findAllByQuery(category, search, sort1);
+        List<MainPostingResponseDto> postingList = new ArrayList<>();
+        for (Posting p : postings) {
+            if (!p.isDoneStatus()) {
+                postingList.add(postingMapper.toResponse(p));
+            }
+        }
+
+        return postingList;
     }
 }
