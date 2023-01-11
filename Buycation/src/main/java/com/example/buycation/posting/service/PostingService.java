@@ -153,17 +153,7 @@ public class PostingService {
                 postingList.add(postingMapper.toResponse(p));
             }
         }
-//        if (sort.equals("금액 순")){
-//            HashMap<MainPostingResponseDto, Long> map=new HashMap<>();
-//            for (MainPostingResponseDto p : postingList) {
-//                map.put(p, p.getPerBudget());
-//            }
-//            List<Map.Entry<MainPostingResponseDto, Long>> entries = new LinkedList<>(map.entrySet());
-//            entries.sort((o1, o2) -> o1.getValue().compareTo(o2.getValue()));
-//
-//            LinkedHashMap<MainPostingResponseDto, Long> result = entries.stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
-//            return new ArrayList<>(result.keySet());
-//        }
+
         return postingList;
     }
 }
