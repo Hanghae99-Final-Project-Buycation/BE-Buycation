@@ -37,6 +37,4 @@ out/
 .vscode/
 
 gradle
-gradlew
-gradlew.bat
 src/main/resources/application-private.properties
