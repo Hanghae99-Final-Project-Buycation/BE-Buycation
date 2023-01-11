@@ -24,7 +24,8 @@ public enum ErrorCode {
     POSTING_PARTICIPANT_REVIEW("게시글 참가자만 리뷰를 남길 수 있습니다.",400),
     DUPLICATE_REVIEW("같은 멤버에게 중복 리뷰는 불가능합니다.",400),
     POSTING_SUCCESS_ERROR("구인 완료가 되지않은 게시물입니다.",400),
-
+    WRONG_CATEGORY_ERROR("잘못된 카테고리입니다.",400),
+    WRONG_SORT_ERROR("잘못된 정렬입니다.",400),
 
     //404 NOT_FOUND 잘못된 리소스 접근
     APPLICANT_NOT_FOUND("존재하지 않는 지원자 입니다.",404),

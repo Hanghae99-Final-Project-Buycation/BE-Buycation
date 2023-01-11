@@ -15,8 +15,8 @@ public interface PostingRepository extends JpaRepository<Posting, Long> {
     List<Posting> findAllByOrderByCreatedAtDesc();
 
     @Query("SELECT p FROM Posting p " +
-            "where (p.title like CONCAT('%', :search,'%') or p.address like CONCAT('%', :search,'%')) " +
-            "and p.category like CONCAT('%', :category,'%')")
+            "where (p.title like CONCAT('%', :search,'%') escape '|' or p.address like CONCAT('%', :search,'%') escape '|') " +
+            "and p.category like CONCAT('%', :category,'%') and p.doneStatus = false ")
     List<Posting> findAllByQuery(@Param("category") String category,
                                  @Param("search") String search,
                                  Sort sort);
