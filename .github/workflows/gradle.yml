@@ -50,7 +50,6 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: clean build -x test
-        gradle-executable: /home/runner/work/BE-Buycation/BE-Buycation/Buycation/gradle/wrapper/gradle-wrapper.properties
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
