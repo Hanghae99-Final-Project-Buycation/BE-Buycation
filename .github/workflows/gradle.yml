@@ -46,10 +46,10 @@ jobs:
       
     - name: Copy Secret2
       env:
-        OCCUPY_SECRET1: ${{ secrets.EMAIL_OCCUPY_SECRET }}
-        OCCUPY_SECRET1_DIR: src/main/resources
-        OCCUPY_SECRET1_DIR_FILE_NAME: application-email.properties
-      run: echo $EMAIL_OCCUPY_SECRET | base64 --decode > $EMAIL_OCCUPY_SECRET_DIR/$OCCUPY_SECRET1_DIR_FILE_NAME
+        OCCUPY_SECRET2: ${{ secrets.EMAIL_OCCUPY_SECRET }}
+        OCCUPY_SECRET2_DIR: src/main/resources
+        OCCUPY_SECRET2_DIR_FILE_NAME: application-email.properties
+      run: echo $EMAIL_OCCUPY_SECRET | base64 --decode > $EMAIL_OCCUPY_SECRET_DIR/$OCCUPY_SECRET2_DIR_FILE_NAME
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
