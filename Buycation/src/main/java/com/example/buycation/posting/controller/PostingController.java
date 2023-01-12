@@ -47,7 +47,7 @@ public class PostingController {
         return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
     }
 
-    @GetMapping("/serach")
+    @GetMapping("/search")
     public ResponseMessage<List<MainPostingResponseDto>> searchPosting(@RequestParam("search") String search,
                                                                        @RequestParam("category") String category,
                                                                        @RequestParam("sort") String sort){
