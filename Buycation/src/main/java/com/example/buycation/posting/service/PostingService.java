@@ -57,18 +57,6 @@ public class PostingService {
     }
 
     @Transactional(readOnly = true)
-    public List<MainPostingResponseDto> getPostingList() {
-        List<Posting> postings = postingRepository.findAllByOrderByCreatedAtDesc();
-        List<MainPostingResponseDto> postingList = new ArrayList<>();
-        for (Posting p : postings) {
-            if (!p.isDoneStatus()) {
-                postingList.add(postingMapper.toResponse(p));
-            }
-        }
-        return postingList;
-    }
-
-    @Transactional(readOnly = true)
     public PostingResponseDto detailPosting(Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
         List<Comment> comments = commentRepository.findAllByPostingOrderByCreatedAtDesc(posting);
