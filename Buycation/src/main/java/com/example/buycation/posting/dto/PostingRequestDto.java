@@ -10,6 +10,7 @@ public class PostingRequestDto {
     private String category;
     private int totalMembers;
     private String address;
+    private String addressDetail;
     private String dueDate;
     private long budget;
     private String image;

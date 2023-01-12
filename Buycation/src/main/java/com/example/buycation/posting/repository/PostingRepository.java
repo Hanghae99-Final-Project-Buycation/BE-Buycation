@@ -12,8 +12,6 @@ import java.util.List;
 public interface PostingRepository extends JpaRepository<Posting, Long> {
     List<Posting> findAllByMember(Member member);
 
-    List<Posting> findAllByOrderByCreatedAtDesc();
-
     @Query("SELECT p FROM Posting p " +
             "where (p.title like CONCAT('%', :search,'%') escape '|' or p.address like CONCAT('%', :search,'%') escape '|') " +
             "and p.category like CONCAT('%', :category,'%') and p.doneStatus = false ")

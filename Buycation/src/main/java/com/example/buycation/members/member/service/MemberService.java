@@ -1,7 +1,7 @@
 package com.example.buycation.members.member.service;
 
 import com.example.buycation.common.exception.CustomException;
-import com.example.buycation.members.mapper.MemberMapper;
+import com.example.buycation.members.member.mapper.MemberMapper;
 import com.example.buycation.members.member.dto.LoginRequestDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.entity.Member;
@@ -25,10 +25,11 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final MemberMapper memberMapper;
 
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
-        Member member = MemberMapper.toMember(signupRequestDto);
+        Member member = memberMapper.toMember(signupRequestDto);
 
         // 로그인 ID 중복 확인
         Optional<Member> emailDuplicateCheck = memberRepository.findByEmail(member.getEmail());

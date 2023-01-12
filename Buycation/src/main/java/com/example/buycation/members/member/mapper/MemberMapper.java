@@ -1,4 +1,4 @@
-package com.example.buycation.members.mapper;
+package com.example.buycation.members.member.mapper;
 
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.entity.Member;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MemberMapper {
-
     private final PasswordEncoder passwordEncoder;
     public Member toMember(SignupRequestDto signupRequestDto) {
         return Member.builder()

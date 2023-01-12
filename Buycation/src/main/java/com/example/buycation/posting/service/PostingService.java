@@ -93,6 +93,7 @@ public class PostingService {
 
         posting.update(postingRequestDto.getTitle(),
                 postingRequestDto.getAddress(),
+                postingRequestDto.getAddressDetail(),
                 String.valueOf(Category.valueOf(postingRequestDto.getCategory())),
                 postingRequestDto.getTotalMembers(),
                 postingRequestDto.getDueDate(),
