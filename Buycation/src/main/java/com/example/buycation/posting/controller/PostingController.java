@@ -42,12 +42,6 @@ public class PostingController {
     }
 
     @GetMapping("")
-    public ResponseMessage<List<MainPostingResponseDto>> getPostingList(){
-        List<MainPostingResponseDto> postingList = postingService.getPostingList();
-        return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
-    }
-
-    @GetMapping("/search")
     public ResponseMessage<List<MainPostingResponseDto>> searchPosting(@RequestParam("search") String search,
                                                                        @RequestParam("category") String category,
                                                                        @RequestParam("sort") String sort){
