@@ -23,17 +23,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        StringBuilder errMessage = new StringBuilder();
 
         for (FieldError error : result.getFieldErrors()) {
                     if(error.getField().equals("email")) {
                         return new ResponseEntity<>(new ResponseMessage<>(INVALID_EMAIL_PATTERN, INVALID_EMAIL_PATTERN), HttpStatus.NOT_FOUND);
                     }else if (error.getField().equals("password")) {
                         return new ResponseEntity<>(new ResponseMessage<>(INVALID_PASSWORD_PATTERN, INVALID_PASSWORD_PATTERN), HttpStatus.NOT_FOUND);
-                    }else if (error.getField().equals("nickname")) {
+                    }else {
                         return new ResponseEntity<>(new ResponseMessage<>(INVALID_NICKNAME_PATTERN, INVALID_NICKNAME_PATTERN), HttpStatus.NOT_FOUND);
-                    } else {
-                        throw new CustomException(INVALID_PARAMETER);
                     }
         }
         return new ResponseEntity<>(new ResponseMessage<>(INVALID_PARAMETER, INVALID_PARAMETER), HttpStatus.NOT_FOUND);

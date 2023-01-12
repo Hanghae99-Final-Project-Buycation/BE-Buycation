@@ -12,7 +12,7 @@ public class SignupRequestDto {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d!@#$%^&+=]{8,}$")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&+=])[A-Za-z\\d!@#$%^&+=]{8,}$")
     private String password;
 
     @NotBlank
