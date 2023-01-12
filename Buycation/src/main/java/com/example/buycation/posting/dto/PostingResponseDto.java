@@ -15,6 +15,7 @@ public class PostingResponseDto {
     private Long postingId;
     private String title;
     private String address;
+    private String addressDetail;
     private String content;
     private String image;
     private String dueDate;

@@ -35,6 +35,9 @@ public class Posting extends TimeStamped {
     @Column(nullable = false)
     private String address;
 
+    @Column
+    private String addressDetail;
+
     @Column(nullable = false)
     private String category;
 
@@ -94,10 +97,11 @@ public class Posting extends TimeStamped {
     }
 
     @Builder
-    public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget, long perBudget,
-                   String image, String content, Member member, boolean doneStatus, int currentMembers, double coordsX, double coordsY ) {
+    public Posting(String title, String address, String addressDetail, String category, int totalMembers, String dueDate, long budget, long perBudget,
+                   String image, String content, Member member, boolean doneStatus, int currentMembers, double coordsX, double coordsY) {
         this.title = title;
         this.address = address;
+        this.addressDetail = addressDetail;
         this.category = category;
         this.totalMembers = totalMembers;
         this.dueDate = dueDate;
@@ -120,10 +124,11 @@ public class Posting extends TimeStamped {
         this.currentMembers += currentMembers;
     }
 
-    public void update(String title, String address, String category, int totalMembers,
+    public void update(String title, String address, String addressDetail, String category, int totalMembers,
                        String dueDate, long budget, String image, String content) {
         this.title = title;
         this.address = address;
+        this.addressDetail = addressDetail;
         this.category = category;
         this.totalMembers = totalMembers;
         this.dueDate = dueDate;
