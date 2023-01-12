@@ -8,15 +8,15 @@ import javax.validation.constraints.Pattern;
 @Getter
 public class SignupRequestDto {
     @NotBlank
-    @Pattern(regexp = "\\\\w+@\\\\w+\\\\.\\\\w+(\\\\.\\\\w+)?")
+    @Pattern(regexp = "^[A-Za-z0-9_\\\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+$")
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d!@#$%^&+=]{8,}$")
     private String password;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[a-z0*9가-힣])[a-z0-9가-힣]{2,10}$", message = "소문자 또는 대문자 또는 한글 포함 2~10자리입니다.")
+    @Pattern(regexp = "^(?=.*[a-z0*9가-힣])[a-z0-9가-힣]{2,10}$")
     private String nickname;
     private String address;
 }
