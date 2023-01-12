@@ -51,6 +51,7 @@ public class PostingController {
     public ResponseMessage<List<MainPostingResponseDto>> searchPosting(@RequestParam("search") String search,
                                                                        @RequestParam("category") String category,
                                                                        @RequestParam("sort") String sort){
+        System.out.println(search + category + sort);
         List<MainPostingResponseDto> postingList = postingService.searchPosting(category, search, sort);
         return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingList);
     }
