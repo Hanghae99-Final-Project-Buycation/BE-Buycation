@@ -6,9 +6,11 @@ import com.example.buycation.members.member.dto.LoginRequestDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import static com.example.buycation.common.MessageCode.*;
 
@@ -20,7 +22,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseMessage<MessageCode> signup(@RequestBody SignupRequestDto signupRequestDto) {
+    public ResponseMessage<MessageCode> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
         memberService.signup(signupRequestDto);
         return new ResponseMessage<>(MEMBER_SIGNUP_SUCCESS, null);
     }
