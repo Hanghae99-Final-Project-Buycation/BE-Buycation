@@ -46,3 +46,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+//plain jar 파일을 만들어지 않기 위해 추가
+jar {
+    enabled = false
+}

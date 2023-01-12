@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import static com.example.buycation.common.exception.ErrorCode.*;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -21,17 +23,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        StringBuilder errMessage = new StringBuilder();
 
         for (FieldError error : result.getFieldErrors()) {
-            errMessage.append("[")
-                    .append(error.getField())
-                    .append("] ")
-                    .append(":")
-                    .append(error.getDefaultMessage());
+                    if(error.getField().equals("email")) {
+                        return new ResponseEntity<>(new ResponseMessage<>(INVALID_EMAIL_PATTERN, INVALID_EMAIL_PATTERN), HttpStatus.NOT_FOUND);
+                    }else if (error.getField().equals("password")) {
+                        return new ResponseEntity<>(new ResponseMessage<>(INVALID_PASSWORD_PATTERN, INVALID_PASSWORD_PATTERN), HttpStatus.NOT_FOUND);
+                    }else {
+                        return new ResponseEntity<>(new ResponseMessage<>(INVALID_NICKNAME_PATTERN, INVALID_NICKNAME_PATTERN), HttpStatus.NOT_FOUND);
+                    }
         }
-
-        return new ResponseEntity<>(new ResponseMessage<>(errMessage.toString(), 404, "error"), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ResponseMessage<>(INVALID_PARAMETER, INVALID_PARAMETER), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({Exception.class})
