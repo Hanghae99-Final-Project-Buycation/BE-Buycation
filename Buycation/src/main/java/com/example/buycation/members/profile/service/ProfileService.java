@@ -26,6 +26,7 @@ import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_REVIEW;
 import static com.example.buycation.common.exception.ErrorCode.MEMBER_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_PARTICIPANT_REVIEW;
+import static com.example.buycation.common.exception.ErrorCode.POSTING_PARTICIPANT_TO_REVIEW;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_SUCCESS_ERROR;
 import static com.example.buycation.common.exception.ErrorCode.SELF_REVIEW_ERROR;
 
@@ -49,9 +50,13 @@ public class ProfileService {
         if (!posting.isDoneStatus()) {
             throw new CustomException(POSTING_SUCCESS_ERROR);
         }
-        //참가자외에 리뷰 금지
+        //참가자만 리뷰 가능
         if (participantRepository.findByPostingAndMember(posting, reviewer) == null) {
             throw new CustomException(POSTING_PARTICIPANT_REVIEW);
+        }
+        //참가자에게만 리뷰 가능
+        if (participantRepository.findByPostingAndMember(posting,member)==null){
+            throw new CustomException(POSTING_PARTICIPANT_TO_REVIEW);
         }
         //셀프리뷰금지
         if (memberId.equals(reviewer.getId())) {
