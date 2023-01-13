@@ -2,6 +2,7 @@ package com.example.buycation.members.member.service;
 
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.dto.LoginRequestDto;
+import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.dto.UpdateMemberRequestDto;
@@ -61,7 +62,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String inputEmail = loginRequestDto.getEmail();
         String inputPassword = loginRequestDto.getPassword();
 
@@ -72,7 +73,10 @@ public class MemberService {
         if (!passwordEncoder.matches(inputPassword, member.getPassword())) {
             throw new CustomException(INCORRECT_PASSWORD);
         }
+
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getEmail()));
+
+        return memberMapper.toResponse(member);
     }
 
     @Transactional(readOnly = true)

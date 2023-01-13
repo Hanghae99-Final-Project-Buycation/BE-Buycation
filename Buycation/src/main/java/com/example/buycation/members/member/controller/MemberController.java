@@ -3,6 +3,7 @@ package com.example.buycation.members.member.controller;
 import com.example.buycation.common.MessageCode;
 import com.example.buycation.common.ResponseMessage;
 import com.example.buycation.members.member.dto.LoginRequestDto;
+import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.dto.UpdateMemberRequestDto;
@@ -42,9 +43,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseMessage<MessageCode> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        memberService.login(loginRequestDto, response);
-        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, null);
+    public ResponseMessage<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        LoginResponseDto loginResponseDto = memberService.login(loginRequestDto, response);
+        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, loginResponseDto);
     }
 
     @GetMapping("/signup")

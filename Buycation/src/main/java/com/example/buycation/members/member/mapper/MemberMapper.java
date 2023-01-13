@@ -1,5 +1,6 @@
 package com.example.buycation.members.member.mapper;
 
+import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.entity.Member;
@@ -34,6 +35,14 @@ public class MemberMapper {
                 .userScore(member.getUserScore()/reviewCount)
                 .reviewCount(member.getReviewCount())
                 .reviewList(reviewList)
+                .build();
+    }
+
+    public LoginResponseDto toResponse(Member member){
+        return LoginResponseDto.builder()
+                .memberId(member.getId())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
                 .build();
     }
 }
