@@ -51,5 +51,11 @@ public class Member {
         this.userScore += userScore;
         this.reviewCount += reviewCount;
     }
+
+    public void update(String nickname, String profileImage, String address) {
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.address = address;
+    }
 }
 
