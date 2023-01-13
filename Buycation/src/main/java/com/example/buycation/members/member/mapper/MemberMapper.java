@@ -41,8 +41,6 @@ public class MemberMapper {
     public LoginResponseDto toResponse(Member member){
         return LoginResponseDto.builder()
                 .memberId(member.getId())
-                .email(member.getEmail())
-                .nickname(member.getNickname())
                 .build();
     }
 }
