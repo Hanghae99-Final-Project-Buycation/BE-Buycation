@@ -26,7 +26,6 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     //mysql dependency 추가
-    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'mysql:mysql-connector-java'
     runtimeOnly 'mysql:mysql-connector-java'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
