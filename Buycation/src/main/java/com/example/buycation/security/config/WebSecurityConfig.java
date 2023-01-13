@@ -40,6 +40,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
+                .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
