@@ -20,6 +20,7 @@ public class MemberMapper {
                 .email(signupRequestDto.getEmail())
                 .password(passwordEncoder.encode(signupRequestDto.getPassword()))
                 .nickname(signupRequestDto.getNickname())
+                .profileImage("")
                 .address(signupRequestDto.getAddress())
                 .build();
     }
@@ -32,6 +33,7 @@ public class MemberMapper {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .profileImage(member.getProfileImage())
+                .adress(member.getAddress())
                 .userScore(member.getUserScore()/reviewCount)
                 .reviewCount(member.getReviewCount())
                 .reviewList(reviewList)
