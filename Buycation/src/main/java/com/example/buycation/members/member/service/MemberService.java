@@ -108,8 +108,10 @@ public class MemberService {
         if (!Pattern.matches("^(?=.*[a-z0*9가-힣])[a-z0-9가-힣]{2,10}$", updateMemberRequestDto.getNickname())) {
             throw new CustomException(INVALID_NICKNAME_PATTERN);
         }
-        if (memberRepository.findByNickname(updateMemberRequestDto.getNickname()).isPresent()) {
-            throw new CustomException(DUPLICATE_NICKNAME);
+        if (!updateMemberRequestDto.getNickname().equals(member.getNickname())) {
+            if (memberRepository.findByNickname(updateMemberRequestDto.getNickname()).isPresent()) {
+                throw new CustomException(DUPLICATE_NICKNAME);
+            }
         }
         Member updateMember = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
         updateMember.update(
