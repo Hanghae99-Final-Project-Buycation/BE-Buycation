@@ -33,7 +33,7 @@ public class MemberMapper {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .profileImage(member.getProfileImage())
-                .adress(member.getAddress())
+                .address(member.getAddress())
                 .userScore(member.getUserScore()/reviewCount)
                 .reviewCount(member.getReviewCount())
                 .reviewList(reviewList)
