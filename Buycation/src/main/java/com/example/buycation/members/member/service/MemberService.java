@@ -23,11 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_EMAIL;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_NICKNAME;
 import static com.example.buycation.common.exception.ErrorCode.INCORRECT_PASSWORD;
+import static com.example.buycation.common.exception.ErrorCode.INVALID_NICKNAME_PATTERN;
 import static com.example.buycation.common.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 
@@ -103,10 +105,13 @@ public class MemberService {
         if (!member.getId().equals(memberId)) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
+        if (!Pattern.matches("^(?=.*[a-z0*9가-힣])[a-z0-9가-힣]{2,10}$", updateMemberRequestDto.getNickname())) {
+            throw new CustomException(INVALID_NICKNAME_PATTERN);
+        }
         if (memberRepository.findByNickname(updateMemberRequestDto.getNickname()).isPresent()) {
             throw new CustomException(DUPLICATE_NICKNAME);
         }
-        Member updateMember = memberRepository.findById(memberId).orElseThrow(()->new CustomException(MEMBER_NOT_FOUND));
+        Member updateMember = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
         updateMember.update(
                 updateMemberRequestDto.getNickname(),
                 updateMemberRequestDto.getProfileImage(),
