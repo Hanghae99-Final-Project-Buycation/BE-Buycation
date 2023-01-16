@@ -7,8 +7,10 @@ import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.dto.UpdateMemberRequestDto;
+import com.example.buycation.members.member.service.KakaoService;
 import com.example.buycation.members.member.service.MemberService;
 import com.example.buycation.security.UserDetailsImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,7 @@ import static com.example.buycation.common.MessageCode.NICKNAME_CHECK_SUCCESS;
 public class MemberController {
 
     private final MemberService memberService;
+    private final KakaoService kakaoService;
 
     @PostMapping("/signup")
     public ResponseMessage<MessageCode> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
@@ -66,5 +69,11 @@ public class MemberController {
                                             @PathVariable Long memberId) {
         memberService.updateMember(userDetails.getMember(), updateMemberRequestDto, memberId);
         return new ResponseMessage<>(MEMBER_UPDATE_SUCCESS, null);
+    }
+
+    @GetMapping("/login/kakao")
+    public ResponseMessage<LoginResponseDto> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response) throws JsonProcessingException {
+        LoginResponseDto loginResponseDto = kakaoService.kakaoLogin(code, response);
+        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, loginResponseDto);
     }
 }
