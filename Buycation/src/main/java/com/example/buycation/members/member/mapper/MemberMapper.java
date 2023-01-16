@@ -25,6 +25,17 @@ public class MemberMapper {
                 .build();
     }
 
+    public Member toMember(String email,Long kakaoId,String password,String nickname) {
+        return new Member(
+                email,
+                password,
+                nickname,
+                "",
+                "",
+                kakaoId
+        );
+    }
+
     public MemberResponseDto toResponse(Member member, List<ReviewResponseDto> reviewList){
         int reviewCount = member.getReviewCount();
         /// by zero 예외 방지
