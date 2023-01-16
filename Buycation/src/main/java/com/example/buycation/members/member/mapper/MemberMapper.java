@@ -27,6 +27,7 @@ public class MemberMapper {
 
     public MemberResponseDto toResponse(Member member, List<ReviewResponseDto> reviewList){
         int reviewCount = member.getReviewCount();
+        /// by zero 예외 방지
         if (member.getReviewCount()==0) reviewCount = 1;
         return MemberResponseDto.builder()
                 .memberId(member.getId())

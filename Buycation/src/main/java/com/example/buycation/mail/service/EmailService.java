@@ -77,6 +77,7 @@ public class EmailService {
 
     @Transactional(readOnly = true)
     public String sendSimpleMessage(String email)throws Exception {
+        //이메일 중복체크
         if (memberRepository.findByEmail(email).isPresent()){
             throw new CustomException(DUPLICATE_EMAIL);
         }

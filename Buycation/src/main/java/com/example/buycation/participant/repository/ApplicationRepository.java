@@ -17,5 +17,5 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     @Modifying
     @Query("delete from Application a where a in :applications")
-    void deleteAllByIdInQuery(@Param("applications") List<Application> applications);
+    void deleteAllByInQuery(@Param("applications") List<Application> applications);
 }

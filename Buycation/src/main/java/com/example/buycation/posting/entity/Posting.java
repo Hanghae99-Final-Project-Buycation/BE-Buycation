@@ -125,7 +125,7 @@ public class Posting extends TimeStamped {
     }
 
     public void update(String title, String address, String addressDetail, String category, int totalMembers,
-                       String dueDate, long budget, String image, String content) {
+                       String dueDate, long budget, String image, String content, double coordsX, double coordsY) {
         this.title = title;
         this.address = address;
         this.addressDetail = addressDetail;
@@ -135,5 +135,7 @@ public class Posting extends TimeStamped {
         this.budget = budget;
         this.image = image;
         this.content = content;
+        this.coordsX = coordsX;
+        this.coordsY = coordsY;
     }
 }

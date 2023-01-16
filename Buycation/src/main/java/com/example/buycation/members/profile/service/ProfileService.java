@@ -93,9 +93,11 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public List<MainPostingResponseDto> getMyPostingList(Member member, Long memberId) {
+        //권한 체크
         if (!member.getId().equals(memberId)) {
             throw new CustomException(AUTHORIZATION_LOOKUP_FAIL);
         }
+
         List<Posting> postings = postingRepository.findAllByMember(member);
         List<MainPostingResponseDto> postingList = new ArrayList<>();
         for (Posting p : postings) {
@@ -106,6 +108,7 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public List<MainPostingResponseDto> getParticipationPostingList(Member member, Long memberId) {
+        //권한 체크
         if (!member.getId().equals(memberId)) {
             throw new CustomException(AUTHORIZATION_LOOKUP_FAIL);
         }

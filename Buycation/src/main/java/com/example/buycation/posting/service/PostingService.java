@@ -28,6 +28,7 @@ import java.util.List;
 
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DELETE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
+import static com.example.buycation.common.exception.ErrorCode.NOT_FINISH_PARTICIPATION;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
 import static com.example.buycation.common.exception.ErrorCode.WRONG_CATEGORY_ERROR;
@@ -50,6 +51,7 @@ public class PostingService {
         Posting posting = postingMapper.toPosting(postingRequestDto, member);
         postingRepository.save(posting);
 
+        //자기자신 참가자 리스트에 등록
         Application application = applicationMapper.toApplication(member, posting);
         Participant participant = applicationMapper.toParticipant(application);
         participantRepository.save(participant);
@@ -71,6 +73,11 @@ public class PostingService {
     public void finishPosting(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
+        //인원수 채워졌는지 확인
+        if (posting.getTotalMembers() != posting.getCurrentMembers()) {
+            throw new CustomException(NOT_FINISH_PARTICIPATION);
+        }
+        //권한체크
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -86,12 +93,13 @@ public class PostingService {
         if (posting.isDoneStatus()) {
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
-
+        //권한체크
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
 
-        posting.update(postingRequestDto.getTitle(),
+        posting.update(
+                postingRequestDto.getTitle(),
                 postingRequestDto.getAddress(),
                 postingRequestDto.getAddressDetail(),
                 String.valueOf(Category.valueOf(postingRequestDto.getCategory())),
@@ -99,7 +107,10 @@ public class PostingService {
                 postingRequestDto.getDueDate(),
                 postingRequestDto.getBudget(),
                 postingRequestDto.getImage(),
-                postingRequestDto.getContent());
+                postingRequestDto.getContent(),
+                postingRequestDto.getCoordsX(),
+                postingRequestDto.getCoordsY()
+        );
     }
 
     @Transactional
@@ -110,23 +121,19 @@ public class PostingService {
         if (posting.isDoneStatus()) {
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
-
+        //권한체크
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_DELETE_FAIL);
         }
 
         List<Comment> comments = commentRepository.findAllByPosting(posting);
-        if (!comments.isEmpty()) {
-            commentRepository.deleteAllByIdInQuery(comments);
-        }
+        if (!comments.isEmpty()) commentRepository.deleteAllByInQuery(comments);
+
         List<Application> applications = applicationRepository.findAllByPosting(posting);
-        if (!applications.isEmpty()) {
-            applicationRepository.deleteAllByIdInQuery(applications);
-        }
+        if (!applications.isEmpty()) applicationRepository.deleteAllByInQuery(applications);
+
         List<Participant> participants = participantRepository.findAllByPosting(posting);
-        if (!participants.isEmpty()) {
-            participantRepository.deleteAllByIdInQuery(participants);
-        }
+        if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
 
         postingRepository.deleteById(postingId);
     }
@@ -148,6 +155,7 @@ public class PostingService {
             case "" -> "";
             default -> throw new CustomException(WRONG_CATEGORY_ERROR);
         };
+        // "%", "_" 가 SQL에서 LIKE의 속성으로 인식 됨으로 escape 처리를 하기 위한 코드
         if (search.contains("%") || search.contains("_")) {
             search = search.replace("%", "|%");
             search = search.replace("_", "|_");
