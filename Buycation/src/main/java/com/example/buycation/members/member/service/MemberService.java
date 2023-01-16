@@ -72,6 +72,7 @@ public class MemberService {
                 () -> new CustomException(MEMBER_NOT_FOUND)
         );
 
+        //비밀번호 일치 확인
         if (!passwordEncoder.matches(inputPassword, member.getPassword())) {
             throw new CustomException(INCORRECT_PASSWORD);
         }
@@ -83,8 +84,8 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public void checkNickname(String nickname) {
-        Optional<Member> nicknameCheck = memberRepository.findByNickname(nickname);
-        if (nicknameCheck.isPresent()) {
+        //중복체크
+        if (memberRepository.findByNickname(nickname).isPresent()) {
             throw new CustomException(DUPLICATE_NICKNAME);
         }
     }
@@ -102,12 +103,15 @@ public class MemberService {
 
     @Transactional
     public void updateMember(Member member, UpdateMemberRequestDto updateMemberRequestDto, Long memberId) {
+        //권한 체크
         if (!member.getId().equals(memberId)) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
+        //닉네임 유효성 체크
         if (!Pattern.matches("^(?=.*[a-z0*9가-힣])[a-z0-9가-힣]{2,10}$", updateMemberRequestDto.getNickname())) {
             throw new CustomException(INVALID_NICKNAME_PATTERN);
         }
+        //현재와 다른 닉네임으로 변경시 중복체크
         if (!updateMemberRequestDto.getNickname().equals(member.getNickname())) {
             if (memberRepository.findByNickname(updateMemberRequestDto.getNickname()).isPresent()) {
                 throw new CustomException(DUPLICATE_NICKNAME);

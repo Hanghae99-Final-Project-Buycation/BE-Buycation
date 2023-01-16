@@ -49,7 +49,7 @@ public class CommentService {
         if(comment.getPosting().isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
-
+        //권한체크
         if (!comment.getMember().getId().equals(member.getId())){
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -64,7 +64,7 @@ public class CommentService {
         if(comment.getPosting().isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
-
+        //권한체크
         if (!comment.getMember().getId().equals(member.getId())){
             throw new CustomException(AUTHORIZATION_DELETE_FAIL);
         }

@@ -155,6 +155,7 @@ public class ParticipantService {
 
         Participant participant = participantRepository.findByPostingAndMember(posting, member);
 
+        //참가자가 있는지 없는지 체크
         if (participant == null){
             throw new CustomException(PARTICIPANT_NOT_FOUND);
         }

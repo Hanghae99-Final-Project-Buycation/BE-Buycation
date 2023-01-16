@@ -51,6 +51,7 @@ public class PostingService {
         Posting posting = postingMapper.toPosting(postingRequestDto, member);
         postingRepository.save(posting);
 
+        //자기자신 참가자 리스트에 등록
         Application application = applicationMapper.toApplication(member, posting);
         Participant participant = applicationMapper.toParticipant(application);
         participantRepository.save(participant);
@@ -76,7 +77,7 @@ public class PostingService {
         if (posting.getTotalMembers() != posting.getCurrentMembers()) {
             throw new CustomException(NOT_FINISH_PARTICIPATION);
         }
-
+        //권한체크
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -92,7 +93,7 @@ public class PostingService {
         if (posting.isDoneStatus()) {
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
-
+        //권한체크
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -120,7 +121,7 @@ public class PostingService {
         if (posting.isDoneStatus()) {
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
-
+        //권한체크
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_DELETE_FAIL);
         }
@@ -154,6 +155,7 @@ public class PostingService {
             case "" -> "";
             default -> throw new CustomException(WRONG_CATEGORY_ERROR);
         };
+        // "%", "_" 가 SQL에서 LIKE의 속성으로 인식 됨으로 escape 처리를 하기 위한 코드
         if (search.contains("%") || search.contains("_")) {
             search = search.replace("%", "|%");
             search = search.replace("_", "|_");
