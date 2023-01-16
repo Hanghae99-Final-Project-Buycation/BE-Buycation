@@ -28,6 +28,7 @@ import java.util.List;
 
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DELETE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
+import static com.example.buycation.common.exception.ErrorCode.NOT_FINISH_PARTICIPATION;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
 import static com.example.buycation.common.exception.ErrorCode.WRONG_CATEGORY_ERROR;
@@ -71,6 +72,11 @@ public class PostingService {
     public void finishPosting(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
+        //인원수 채워졌는지 확인
+        if (posting.getTotalMembers()==posting.getCurrentMembers()) {
+            throw new CustomException(NOT_FINISH_PARTICIPATION);
+        }
+
         if (!posting.getMember().getId().equals(member.getId())) {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
@@ -91,7 +97,8 @@ public class PostingService {
             throw new CustomException(AUTHORIZATION_UPDATE_FAIL);
         }
 
-        posting.update(postingRequestDto.getTitle(),
+        posting.update(
+                postingRequestDto.getTitle(),
                 postingRequestDto.getAddress(),
                 postingRequestDto.getAddressDetail(),
                 String.valueOf(Category.valueOf(postingRequestDto.getCategory())),
@@ -99,7 +106,10 @@ public class PostingService {
                 postingRequestDto.getDueDate(),
                 postingRequestDto.getBudget(),
                 postingRequestDto.getImage(),
-                postingRequestDto.getContent());
+                postingRequestDto.getContent(),
+                postingRequestDto.getCoordsX(),
+                postingRequestDto.getCoordsY()
+        );
     }
 
     @Transactional
@@ -116,17 +126,13 @@ public class PostingService {
         }
 
         List<Comment> comments = commentRepository.findAllByPosting(posting);
-        if (!comments.isEmpty()) {
-            commentRepository.deleteAllByIdInQuery(comments);
-        }
+        if (!comments.isEmpty()) commentRepository.deleteAllByInQuery(comments);
+
         List<Application> applications = applicationRepository.findAllByPosting(posting);
-        if (!applications.isEmpty()) {
-            applicationRepository.deleteAllByIdInQuery(applications);
-        }
+        if (!applications.isEmpty()) applicationRepository.deleteAllByInQuery(applications);
+
         List<Participant> participants = participantRepository.findAllByPosting(posting);
-        if (!participants.isEmpty()) {
-            participantRepository.deleteAllByIdInQuery(participants);
-        }
+        if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
 
         postingRepository.deleteById(postingId);
     }
