@@ -73,7 +73,7 @@ public class PostingService {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
         //인원수 채워졌는지 확인
-        if (posting.getTotalMembers()==posting.getCurrentMembers()) {
+        if (posting.getTotalMembers() != posting.getCurrentMembers()) {
             throw new CustomException(NOT_FINISH_PARTICIPATION);
         }
 
