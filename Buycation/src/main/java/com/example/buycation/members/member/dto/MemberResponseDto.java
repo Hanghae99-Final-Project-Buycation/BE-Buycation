@@ -13,7 +13,7 @@ public class MemberResponseDto {
     private String email;
     private String nickname;
     private String profileImage;
-    private String adress;
+    private String address;
     private int userScore;
     private int reviewCount;
     private List<ReviewResponseDto> reviewList;
