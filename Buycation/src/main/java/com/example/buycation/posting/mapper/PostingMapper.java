@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class PostingMapper {
 
-    public PostingResponseDto toResponse(Posting posting, List<CommentResponseDto> commentList){
+    public PostingResponseDto toResponse(Posting posting, List<CommentResponseDto> commentList, boolean myPosting){
         return PostingResponseDto.builder()
                 .memberId(posting.getMember().getId())
                 .nickname(posting.getMember().getNickname())
@@ -35,6 +35,7 @@ public class PostingMapper {
                 .category(posting.getCategory())
                 .commentList(commentList)
                 .doneStatus(posting.isDoneStatus())
+                .myPosting(myPosting)
                 .build();
     }
 

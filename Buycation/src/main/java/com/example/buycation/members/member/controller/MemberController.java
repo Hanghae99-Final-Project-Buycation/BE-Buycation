@@ -3,7 +3,6 @@ package com.example.buycation.members.member.controller;
 import com.example.buycation.common.MessageCode;
 import com.example.buycation.common.ResponseMessage;
 import com.example.buycation.members.member.dto.LoginRequestDto;
-import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.dto.UpdateMemberRequestDto;
@@ -46,9 +45,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseMessage<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        LoginResponseDto loginResponseDto = memberService.login(loginRequestDto, response);
-        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, loginResponseDto);
+    public ResponseMessage<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        memberService.login(loginRequestDto, response);
+        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, null);
     }
 
     @GetMapping("/signup")
@@ -57,9 +56,16 @@ public class MemberController {
         return new ResponseMessage<>(NICKNAME_CHECK_SUCCESS, null);
     }
 
-    @GetMapping("/{memberId}")
-    public ResponseMessage<MemberResponseDto> getMember(@PathVariable Long memberId){
-        MemberResponseDto memberResponseDto = memberService.getMember(memberId);
+    @GetMapping("/{memberId}/profile")
+    public ResponseMessage<MemberResponseDto> getMember(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable Long memberId){
+        MemberResponseDto memberResponseDto = memberService.getMember(memberId, userDetails);
+        return new ResponseMessage<>(MEMBER_LOOKUP_SUCCESS, memberResponseDto);
+    }
+
+    @GetMapping("/myprofile")
+    public ResponseMessage<MemberResponseDto> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        MemberResponseDto memberResponseDto = memberService.getMyProfile(userDetails.getMember());
         return new ResponseMessage<>(MEMBER_LOOKUP_SUCCESS, memberResponseDto);
     }
 
@@ -72,8 +78,8 @@ public class MemberController {
     }
 
     @GetMapping("/login/kakao")
-    public ResponseMessage<LoginResponseDto> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response) throws JsonProcessingException {
-        LoginResponseDto loginResponseDto = kakaoService.kakaoLogin(code, response);
-        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, loginResponseDto);
+    public ResponseMessage<?> kakaoLogin(@RequestParam("code") String code, HttpServletResponse response) throws JsonProcessingException {
+        kakaoService.kakaoLogin(code, response);
+        return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, null);
     }
 }

@@ -1,7 +1,6 @@
 package com.example.buycation.members.member.service;
 
 import com.example.buycation.members.member.dto.KakaoMemberInfoDto;
-import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.members.member.mapper.MemberMapper;
 import com.example.buycation.members.member.repository.MemberRepository;
@@ -37,7 +36,7 @@ public class KakaoService {
 
 
     @Transactional
-    public LoginResponseDto kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public void kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
 
@@ -49,8 +48,6 @@ public class KakaoService {
 
         // 4. JWT 토큰 반환
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(kakaoMember.getEmail()));
-
-        return memberMapper.toResponse(kakaoMember);
     }
 
     // 1. "인가 코드"로 "액세스 토큰" 요청

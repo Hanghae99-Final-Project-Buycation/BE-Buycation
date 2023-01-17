@@ -50,8 +50,9 @@ public class PostingController {
     }
 
     @GetMapping("/{postingId}")
-    public ResponseMessage<PostingResponseDto> detailPosting(@PathVariable Long postingId){
-        PostingResponseDto postingResponseDto = postingService.detailPosting(postingId);
+    public ResponseMessage<PostingResponseDto> detailPosting(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                             @PathVariable Long postingId){
+        PostingResponseDto postingResponseDto = postingService.detailPosting(postingId, userDetails);
         return new ResponseMessage<>(POSTING_LOOKUP_SUCCESS, postingResponseDto);
     }
 

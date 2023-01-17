@@ -18,6 +18,7 @@ import com.example.buycation.posting.entity.Category;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
+import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -59,14 +60,20 @@ public class PostingService {
     }
 
     @Transactional(readOnly = true)
-    public PostingResponseDto detailPosting(Long postingId) {
+    public PostingResponseDto detailPosting(Long postingId, UserDetailsImpl userDetails) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+        boolean myPosting = false;
+        if (userDetails != null){
+            if (userDetails.getMember().getId().equals(posting.getMember().getId())){
+                myPosting = true;
+            }
+        }
         List<Comment> comments = commentRepository.findAllByPostingOrderByCreatedAtDesc(posting);
         List<CommentResponseDto> commentList = new ArrayList<>();
         for (Comment c : comments) {
             commentList.add(commentMapper.toResponse(c));
         }
-        return postingMapper.toResponse(posting, commentList);
+        return postingMapper.toResponse(posting, commentList, myPosting);
     }
 
     @Transactional

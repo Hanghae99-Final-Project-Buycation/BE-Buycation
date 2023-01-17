@@ -2,7 +2,6 @@ package com.example.buycation.members.member.service;
 
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.dto.LoginRequestDto;
-import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.dto.UpdateMemberRequestDto;
@@ -13,6 +12,7 @@ import com.example.buycation.members.profile.dto.ReviewResponseDto;
 import com.example.buycation.members.profile.entity.Review;
 import com.example.buycation.members.profile.mapper.ReviewMapper;
 import com.example.buycation.members.profile.repository.ReviewRepository;
+import com.example.buycation.security.UserDetailsImpl;
 import com.example.buycation.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,7 +64,7 @@ public class MemberService {
     }
 
     @Transactional
-    public LoginResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String inputEmail = loginRequestDto.getEmail();
         String inputPassword = loginRequestDto.getPassword();
 
@@ -78,8 +78,6 @@ public class MemberService {
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(member.getEmail()));
-
-        return memberMapper.toResponse(member);
     }
 
     @Transactional(readOnly = true)
@@ -91,14 +89,20 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto getMember(Long memberId) {
+    public MemberResponseDto getMember(Long memberId, UserDetailsImpl userDetails) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
+        boolean myProfile = false;
+        if (userDetails != null){
+            if (userDetails.getMember().getId().equals(member.getId())){
+                myProfile = true;
+            }
+        }
         List<Review> reviews = reviewRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
         List<ReviewResponseDto> reviewList = new ArrayList<>();
         for (Review r : reviews) {
             reviewList.add(reviewMapper.toResponse(r));
         }
-        return memberMapper.toResponse(member, reviewList);
+        return memberMapper.toResponse(member, reviewList, myProfile);
     }
 
     @Transactional
@@ -122,5 +126,15 @@ public class MemberService {
                 updateMemberRequestDto.getNickname(),
                 updateMemberRequestDto.getProfileImage(),
                 updateMemberRequestDto.getAddress());
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponseDto getMyProfile(Member member) {
+        List<Review> reviews = reviewRepository.findAllByMemberIdOrderByCreatedAtDesc(member.getId());
+        List<ReviewResponseDto> reviewList = new ArrayList<>();
+        for (Review r : reviews) {
+            reviewList.add(reviewMapper.toResponse(r));
+        }
+        return memberMapper.toResponse(member, reviewList, true);
     }
 }

@@ -17,4 +17,5 @@ public class MemberResponseDto {
     private int userScore;
     private int reviewCount;
     private List<ReviewResponseDto> reviewList;
+    private boolean myProfile;
 }
