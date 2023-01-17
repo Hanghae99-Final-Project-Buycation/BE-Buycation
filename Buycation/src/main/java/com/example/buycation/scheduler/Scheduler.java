@@ -30,7 +30,7 @@ public class Scheduler {
     // 초, 분, 시, 일, 월, 주 업데이트 순서
     @Scheduled(cron = "0 * * * * *")
     @Transactional
-    public void updatePrice() throws InterruptedException {
+    public void updatePostings() throws InterruptedException {
         System.out.println("게시글 업데이트 시작");
 
         //현재 날짜, 시간 값 가져오기

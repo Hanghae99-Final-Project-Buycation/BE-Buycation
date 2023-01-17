@@ -50,7 +50,7 @@ public class WebSecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, new String[]{"/api/members/signup", "/api/members/login"}).permitAll()
-                .antMatchers(HttpMethod.GET, new String[]{"/api/posting/**", "/api/members/**"}).permitAll()
+                .antMatchers(HttpMethod.GET, new String[]{"/api/posting/**", "/api/members/signup/**","/api/members/{memberId}/profile"}).permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling()

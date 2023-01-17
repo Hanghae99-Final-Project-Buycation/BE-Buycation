@@ -1,6 +1,5 @@
 package com.example.buycation.members.member.mapper;
 
-import com.example.buycation.members.member.dto.LoginResponseDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
 import com.example.buycation.members.member.entity.Member;
@@ -36,7 +35,7 @@ public class MemberMapper {
         );
     }
 
-    public MemberResponseDto toResponse(Member member, List<ReviewResponseDto> reviewList){
+    public MemberResponseDto toResponse(Member member, List<ReviewResponseDto> reviewList, boolean myProfile){
         int reviewCount = member.getReviewCount();
         /// by zero 예외 방지
         if (member.getReviewCount()==0) reviewCount = 1;
@@ -45,16 +44,11 @@ public class MemberMapper {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .profileImage(member.getProfileImage())
-                .adress(member.getAddress())
+                .address(member.getAddress())
                 .userScore(member.getUserScore()/reviewCount)
                 .reviewCount(member.getReviewCount())
                 .reviewList(reviewList)
-                .build();
-    }
-
-    public LoginResponseDto toResponse(Member member){
-        return LoginResponseDto.builder()
-                .memberId(member.getId())
+                .myProfile(myProfile)
                 .build();
     }
 }
