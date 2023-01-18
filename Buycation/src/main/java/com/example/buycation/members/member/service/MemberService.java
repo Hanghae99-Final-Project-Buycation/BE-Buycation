@@ -1,6 +1,8 @@
 package com.example.buycation.members.member.service;
 
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.mail.entity.EmailCheck;
+import com.example.buycation.mail.repository.EmailCheckRepository;
 import com.example.buycation.members.member.dto.LoginRequestDto;
 import com.example.buycation.members.member.dto.MemberResponseDto;
 import com.example.buycation.members.member.dto.SignupRequestDto;
@@ -28,6 +30,7 @@ import java.util.regex.Pattern;
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_EMAIL;
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_NICKNAME;
+import static com.example.buycation.common.exception.ErrorCode.EMAIL_CERTIFICATION_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.INCORRECT_PASSWORD;
 import static com.example.buycation.common.exception.ErrorCode.INVALID_NICKNAME_PATTERN;
 import static com.example.buycation.common.exception.ErrorCode.MEMBER_NOT_FOUND;
@@ -43,6 +46,7 @@ public class MemberService {
     private final MemberMapper memberMapper;
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
+    private final EmailCheckRepository emailCheckRepository;
 
     @Transactional
     public void signup(SignupRequestDto signupRequestDto) {
@@ -58,6 +62,17 @@ public class MemberService {
         Optional<Member> nicknameDuplicateCheck = memberRepository.findByNickname(member.getNickname());
         if (nicknameDuplicateCheck.isPresent()) {
             throw new CustomException(DUPLICATE_NICKNAME);
+        }
+
+        //이메일 인증 확인
+        EmailCheck emailCheck = emailCheckRepository.findByEmail(member.getEmail());
+        //이메일 확인 객체가 없으면 실패
+        if (emailCheck == null){
+            throw new CustomException(EMAIL_CERTIFICATION_FAIL);
+        }
+        //이메일 확인 객체가 false면 실패
+        if (!emailCheck.isStatus()){
+            throw new CustomException(EMAIL_CERTIFICATION_FAIL);
         }
 
         memberRepository.save(member);
@@ -92,8 +107,8 @@ public class MemberService {
     public MemberResponseDto getMember(Long memberId, UserDetailsImpl userDetails) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND));
         boolean myProfile = false;
-        if (userDetails != null){
-            if (userDetails.getMember().getId().equals(member.getId())){
+        if (userDetails != null) {
+            if (userDetails.getMember().getId().equals(member.getId())) {
                 myProfile = true;
             }
         }

@@ -1,6 +1,9 @@
 package com.example.buycation.mail.service;
 
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.mail.entity.EmailCheck;
+import com.example.buycation.mail.mapper.EmailCheckMapper;
+import com.example.buycation.mail.repository.EmailCheckRepository;
 import com.example.buycation.members.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 import java.util.Random;
 
 import static com.example.buycation.common.exception.ErrorCode.DUPLICATE_EMAIL;
+import static com.example.buycation.common.exception.ErrorCode.EMAIL_CHECK_FAIL;
 import static com.example.buycation.common.exception.ErrorCode.EMAIL_SEND_FAIL;
 
 @Service
@@ -22,36 +26,38 @@ import static com.example.buycation.common.exception.ErrorCode.EMAIL_SEND_FAIL;
 public class EmailService {
 
     private final MemberRepository memberRepository;
+    private final EmailCheckRepository emailCheckRepository;
+    private final EmailCheckMapper emailCheckMapper;
 
     @Autowired
     JavaMailSender emailSender;
 
-    private MimeMessage createMessage(String email, String ePw)throws Exception{
-        System.out.println("보내는 대상 : "+ email);
-        System.out.println("인증 번호 : "+ePw);
-        MimeMessage  message = emailSender.createMimeMessage();
+    private MimeMessage createMessage(String email, String code) throws Exception {
+        System.out.println("보내는 대상 : " + email);
+        System.out.println("인증 번호 : " + code);
+        MimeMessage message = emailSender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, email);//보내는 대상
         message.setSubject("Buycation 이메일 인증");//제목
 
         //내용(상세)
-        String msgg="";
-        msgg+= "<div style='margin:20px;'>";
-        msgg+= "<h1> 안녕하세요 Buycation입니다. </h1>";
-        msgg+= "<br>";
-        msgg+= "<p>아래 코드를 복사해 입력해주세요<p>";
-        msgg+= "<br>";
-        msgg+= "<p>감사합니다.<p>";
-        msgg+= "<br>";
-        msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg+= "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
-        msgg+= "<div style='font-size:130%'>";
-        msgg+= "CODE : <strong>";
-        msgg+= ePw+"</strong><div><br/> ";
-        msgg+= "</div>";
+        String msgg = "";
+        msgg += "<div style='margin:20px;'>";
+        msgg += "<h1> 안녕하세요 Buycation입니다. </h1>";
+        msgg += "<br>";
+        msgg += "<p>아래 코드를 복사해 입력해주세요<p>";
+        msgg += "<br>";
+        msgg += "<p>감사합니다.<p>";
+        msgg += "<br>";
+        msgg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
+        msgg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
+        msgg += "<div style='font-size:130%'>";
+        msgg += "CODE : <strong>";
+        msgg += code + "</strong><div><br/> ";
+        msgg += "</div>";
 
         message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("jihun1362@gmail.com","Baekjihun"));//보내는 사람
+        message.setFrom(new InternetAddress("jihun1362@gmail.com", "Baekjihun"));//보내는 사람
 
         return message;
     }
@@ -75,21 +81,36 @@ public class EmailService {
         return key.toString();
     }
 
-    @Transactional(readOnly = true)
-    public String sendSimpleMessage(String email)throws Exception {
+    @Transactional
+    public String sendSimpleMessage(String email) throws Exception {
         //이메일 중복체크
-        if (memberRepository.findByEmail(email).isPresent()){
+        if (memberRepository.findByEmail(email).isPresent()) {
             throw new CustomException(DUPLICATE_EMAIL);
         }
-        String ePw = createKey();
-        MimeMessage message = createMessage(email, ePw);
-        try{//예외처리
+        String code = createKey();
+        MimeMessage message = createMessage(email, code);
+        try {//예외처리
             emailSender.send(message);
-        }catch(MailException es){
+        } catch (MailException es) {
             es.printStackTrace();
             throw new CustomException(EMAIL_SEND_FAIL);
         }
-        return ePw;
+        //전에 보낸 인증 객체가 있다면 삭제 후 재생성
+        EmailCheck emailCheck = emailCheckRepository.findByEmail(email);
+        if (emailCheck != null) {
+            emailCheckRepository.delete(emailCheck);
+        }
+        emailCheckRepository.save(emailCheckMapper.toEmailCheck(email, code));
+        return code;
+    }
+
+    @Transactional
+    public void emailCheck(String email, String code) {
+        EmailCheck emailCheck = emailCheckRepository.findByEmail(email);
+        if (!emailCheck.getCode().equals(code)) {
+            throw new CustomException(EMAIL_CHECK_FAIL);
+        }
+        emailCheck.success();
     }
 }
 
