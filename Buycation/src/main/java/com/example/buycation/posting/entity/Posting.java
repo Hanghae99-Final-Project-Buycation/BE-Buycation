@@ -35,6 +35,9 @@ public class Posting extends TimeStamped {
     @Column(nullable = false)
     private String address;
 
+    @Column
+    private String addressDetail;
+
     @Column(nullable = false)
     private String category;
 
@@ -50,6 +53,9 @@ public class Posting extends TimeStamped {
     @Column(nullable = false)
     private long budget;
 
+    @Column(nullable = false)
+    private long perBudget;
+
     @Column
     private String image;
 
@@ -58,6 +64,12 @@ public class Posting extends TimeStamped {
 
     @Column(nullable = false)
     private boolean doneStatus;
+
+    @Column(nullable = false)
+    private double coordsX;
+
+    @Column(nullable = false)
+    private double coordsY;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memberId", nullable = false)
@@ -85,38 +97,45 @@ public class Posting extends TimeStamped {
     }
 
     @Builder
-    public Posting(String title, String address, String category, int totalMembers, String dueDate, long budget,
-                   String image, String content, Member member, boolean doneStatus, int currentMembers) {
+    public Posting(String title, String address, String addressDetail, String category, int totalMembers, String dueDate, long budget, long perBudget,
+                   String image, String content, Member member, boolean doneStatus, int currentMembers, double coordsX, double coordsY) {
         this.title = title;
         this.address = address;
+        this.addressDetail = addressDetail;
         this.category = category;
         this.totalMembers = totalMembers;
         this.dueDate = dueDate;
         this.budget = budget;
+        this.perBudget = perBudget;
         this.image = image;
         this.content = content;
         this.member = member;
         this.doneStatus = doneStatus;
         this.currentMembers = currentMembers;
+        this.coordsX = coordsX;
+        this.coordsY = coordsY;
     }
 
-    public void finish(boolean doneStatus){
+    public void finish(boolean doneStatus) {
         this.doneStatus = doneStatus;
     }
 
-    public void addMembers(int currentMembers){
+    public void addMembers(int currentMembers) {
         this.currentMembers += currentMembers;
     }
 
-    public void update(String title, String address, String category, int totalMembers,
-                       String dueDate, long budget, String image, String content){
+    public void update(String title, String address, String addressDetail, String category, int totalMembers,
+                       String dueDate, long budget, String image, String content, double coordsX, double coordsY) {
         this.title = title;
         this.address = address;
+        this.addressDetail = addressDetail;
         this.category = category;
         this.totalMembers = totalMembers;
         this.dueDate = dueDate;
         this.budget = budget;
         this.image = image;
         this.content = content;
+        this.coordsX = coordsX;
+        this.coordsY = coordsY;
     }
 }

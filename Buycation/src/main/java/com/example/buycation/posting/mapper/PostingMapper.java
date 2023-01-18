@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class PostingMapper {
 
-    public PostingResponseDto toResponse(Posting posting, List<CommentResponseDto> commentList){
+    public PostingResponseDto toResponse(Posting posting, List<CommentResponseDto> commentList, boolean myPosting){
         return PostingResponseDto.builder()
                 .memberId(posting.getMember().getId())
                 .nickname(posting.getMember().getNickname())
@@ -23,6 +23,7 @@ public class PostingMapper {
                 .postingId(posting.getId())
                 .title(posting.getTitle())
                 .address(posting.getAddress())
+                .addressDetail(posting.getAddressDetail())
                 .content(posting.getContent())
                 .image(posting.getImage())
                 .dueDate(posting.getDueDate())
@@ -34,6 +35,7 @@ public class PostingMapper {
                 .category(posting.getCategory())
                 .commentList(commentList)
                 .doneStatus(posting.isDoneStatus())
+                .myPosting(myPosting)
                 .build();
     }
 
@@ -44,10 +46,13 @@ public class PostingMapper {
                 .address(posting.getAddress())
                 .image(posting.getImage())
                 .dueDate(posting.getDueDate())
-                .perBudget((posting.getBudget())/(posting.getTotalMembers()))
+                .perBudget(posting.getPerBudget())
                 .totalMembers(posting.getTotalMembers())
                 .currentMembers(posting.getCurrentMembers())
                 .category(posting.getCategory())
+                .doneStatus(posting.isDoneStatus())
+                .coordsX(posting.getCoordsX())
+                .coordsY(posting.getCoordsY())
                 .build();
     }
 
@@ -57,13 +62,17 @@ public class PostingMapper {
                 .category(String.valueOf(Category.valueOf(postingRequestDto.getCategory())))
                 .totalMembers(postingRequestDto.getTotalMembers())
                 .address(postingRequestDto.getAddress())
+                .addressDetail(postingRequestDto.getAddressDetail())
                 .budget(postingRequestDto.getBudget())
+                .perBudget(postingRequestDto.getBudget()/postingRequestDto.getTotalMembers())
                 .dueDate(postingRequestDto.getDueDate())
                 .image(postingRequestDto.getImage())
                 .content(postingRequestDto.getContent())
                 .member(member)
                 .doneStatus(false)
                 .currentMembers(1)
+                .coordsX(postingRequestDto.getCoordsX())
+                .coordsY(postingRequestDto.getCoordsY())
                 .build();
     }
 }

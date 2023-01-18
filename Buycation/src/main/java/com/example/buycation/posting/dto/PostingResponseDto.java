@@ -15,6 +15,7 @@ public class PostingResponseDto {
     private Long postingId;
     private String title;
     private String address;
+    private String addressDetail;
     private String content;
     private String image;
     private String dueDate;
@@ -25,5 +26,6 @@ public class PostingResponseDto {
     private String createdAt;
     private String category;
     private List<CommentResponseDto> commentList;
-    private Boolean doneStatus;
+    private boolean doneStatus;
+    private boolean myPosting;
 }

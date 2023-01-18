@@ -89,7 +89,7 @@ public class ParticipantService {
     public void applicantAccept(Member member, Long postingId, Long applicationId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
-        //완료된 게시글 신청 금지
+        //완료된 게시글 수락 금지
         if(posting.isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
@@ -99,13 +99,18 @@ public class ParticipantService {
             throw new CustomException(AUTHORIZATION_DECISION_FAIL);
         }
 
+        //작성자의 다른 게시글의 참가자를 수락할 수 없게 하기
         Application application = applicationRepository.findById(applicationId).orElseThrow(()->new CustomException(APPLICANT_NOT_FOUND));
+        if (!application.getPosting().equals(posting)){
+            throw new CustomException(APPLICANT_NOT_FOUND);
+        }
 
         //지원 수락된 참가자 중복수락 금지
         if (participantRepository.findByPostingAndMember(application.getPosting(), application.getMember()) != null){
             throw new CustomException(DUPLICATE_PARTICIPATION);
         }
 
+        //목표 인원수가 채워졌는지 확인
         if (posting.getCurrentMembers()==posting.getTotalMembers()){
             throw new CustomException(FINISH_PARTICIPATION);
         }
@@ -145,7 +150,7 @@ public class ParticipantService {
     public void cancelParticipation(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
-        //완료된 게시글 신청 금지
+        //완료된 게시글 참가취소 금지
         if(posting.isDoneStatus()){
             throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
         }
@@ -157,6 +162,7 @@ public class ParticipantService {
 
         Participant participant = participantRepository.findByPostingAndMember(posting, member);
 
+        //참가자가 있는지 없는지 체크
         if (participant == null){
             throw new CustomException(PARTICIPANT_NOT_FOUND);
         }

@@ -30,18 +30,50 @@ public class Member {
     @Column(nullable = false)
     private int userScore;
 
-    @Column
+    @Column(nullable = false)
+    private int reviewCount;
+
+    @Column(nullable = false)
     private String profileImage;
 
-    @Column
+    @Column(nullable = false)
     private String address;
 
+    @Column
+    private Long kakaoId;
+
     @Builder
-    public Member(String email, String password, String nickname, String address) {
+    public Member(String email, String password, String nickname, String profileImage, String address) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.profileImage = profileImage;
         this.address = address;
+    }
+
+    public Member(String email, String password, String nickname, String profileImage, String address, Long kakaoId) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.address = address;
+        this.kakaoId = kakaoId;
+    }
+
+    public void addScore(int userScore, int reviewCount) {
+        this.userScore += userScore;
+        this.reviewCount += reviewCount;
+    }
+
+    public void update(String nickname, String profileImage, String address) {
+        this.nickname = nickname;
+        this.profileImage = profileImage;
+        this.address = address;
+    }
+
+    public Member kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }
 
