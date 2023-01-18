@@ -13,6 +13,7 @@ import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -32,15 +33,13 @@ public class AlarmService {
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
 
-    private final MemberRepository memberRepository;
-
     public SseEmitter subscribe(Long memberId, String lastEventId) throws IOException{
         String emitterId = memberId + "_" + System.currentTimeMillis();
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         try {
             emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
             emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
-            sendAlarm(emitter, emitterId, "connect check : " + emitterId);
+            sendAlarm(emitter, memberId + "_" + System.currentTimeMillis(), emitterId, "connect check : " + emitterId);
 
             if(!lastEventId.isEmpty()){
                 sendLostAlarm(emitter, memberId, lastEventId);
@@ -60,35 +59,32 @@ public class AlarmService {
                 )
                 .forEach(
                         (entry) -> {
-                            sendAlarm(emitter, entry.getKey(), entry.getValue());
-                            System.out.println("entry.getKey() :: " + entry.getKey());
+                            sendAlarm(emitter, lastEventId, entry.getKey(), entry.getValue());
                         }
                 );
     }
 
-    public void sendAlarm(SseEmitter sseEmitter, String emitterId, Object data){
+    public void sendAlarm(SseEmitter sseEmitter,  String eventId, String emitterId, Object data){
         try {
-            sseEmitter.send(SseEmitter.event().id(emitterId).data(data));
+            sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
             emitterRepository.deleteById(emitterId);
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAlarm(Member member, AlarmType alarmType, Long postingId, String content){
-        System.out.println("알림 content => " + content);
+
         Alarm alarm = new Alarm(postingId, content, false, alarmType, member);
         alarmRepository.save(alarm);
 
         String id = String.valueOf(member.getId());
-        //해당 유저id로 시작하는 SseEmitter 가져오기
+        String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
-                    emitterRepository.saveEventCache(key, alarm);//캐쉬에 이벤트 저장
-                    System.out.println("sseEmitters key :: " + key);
-                    //클라이언트에 알람 전송
-                    sendAlarm(emitter, key, alarmMapper.toAlarmResponseDto(alarm));
+                    emitterRepository.saveEventCache(key, alarm);
+                    sendAlarm(emitter, eventId, key, alarmMapper.toRealtimeAlarmDto(alarm));
                 }
         );
     }
@@ -96,7 +92,7 @@ public class AlarmService {
     @Transactional
     public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails){
         Member member = userDetails.getMember();
-        List<Alarm> alarms = alarmRepository.findAllByMemberOrderByIdDesc(member);
+        List<Alarm> alarms = alarmRepository.findAllByMemberOrderByMemberDesc(member);
         return alarms.stream().map(alarm -> alarmMapper.toAlarmResponseDto(alarm)).toList();
     }
 
@@ -123,8 +119,8 @@ public class AlarmService {
         alarmRepository.deleteAllByMember(member);
     }
 
-    public Long getAlarmCount(long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
+    public Long getAlarmCount(UserDetailsImpl userDetails) {
+        Member member = userDetails.getMember();
         Long count = alarmRepository.countByReadFalseAndMember(member);
         return count;
     }

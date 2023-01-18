@@ -20,13 +20,14 @@ import static com.example.buycation.common.MessageCode.*;
 
 
 @RequiredArgsConstructor
-@Controller
+@RestController
+@RequestMapping("/api/alarm")
 public class AlarmController {
 
     public final AlarmService alarmService;
 
     //memberId는 추후에 수정 필수
-    @GetMapping(value = "/alarm/subs/{memberId}", produces= MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/subscribe/{memberId}", produces= MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                 @RequestParam(required = false, defaultValue = "")String lastEventId,
                                 @PathVariable Long memberId) throws IOException{
@@ -36,32 +37,30 @@ public class AlarmController {
 
     }
 
-
-
-    @GetMapping("/alarm")
+    @GetMapping("")
     public ResponseMessage<List<AlarmResponseDto>> getAlarms(@AuthenticationPrincipal UserDetailsImpl userDetails){
         List<AlarmResponseDto> alarms = alarmService.getAlarms(userDetails);
         return new ResponseMessage<List<AlarmResponseDto>>(ALARM_SEARCH_SUCCESS, alarms);
     }
 
-    @GetMapping("/alarm/count")
+    @GetMapping("/count")
     public ResponseMessage<Long> getAlarmCount(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long count = alarmService.getAlarmCount(1L);
+        Long count = alarmService.getAlarmCount(userDetails);
         return new ResponseMessage<Long>(ALARM_COUNT_SUCCESS, count);
     }
 
-    @PatchMapping("/alarm/{alarmId}")
+    @PatchMapping("/{alarmId}")
     public ResponseMessage<String> readAlarm(@PathVariable Long alarmId){
         return new ResponseMessage<>(ALARM_READ_SUCCESS, alarmService.readAlarm(alarmId));
     }
 
-    @DeleteMapping("/alarm/{alarmId}")
+    @DeleteMapping("/{alarmId}")
     public ResponseMessage<String> deleteAlarm(@PathVariable Long alarmId){
         alarmService.deleteAlarm(alarmId);
         return new ResponseMessage<>(ALARM_DELETE_SUCCESS, null);
     }
 
-    @DeleteMapping("/alarm")
+    @DeleteMapping("")
     public ResponseMessage<?> deleteAlarm(@AuthenticationPrincipal UserDetailsImpl userDetails){
         alarmService.deleteAllAlarms(userDetails);
         return new ResponseMessage<>(ALARM_DELETE_SUCCESS, null);

@@ -7,6 +7,7 @@ import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.mapper.CommentMapper;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.common.exception.ErrorCode;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
@@ -33,6 +34,7 @@ public class CommentService {
 
     @Transactional
     public void createComment(CommentRequestDto commentRequestDto, Member member, Long postingId) {
+
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
         //완료된 게시글 댓글작성 금지
@@ -43,8 +45,13 @@ public class CommentService {
         Comment comment = commentMapper.toComment(commentRequestDto, member, posting);
         commentRepository.save(comment);
         posting.add(comment);
-        if(!posting.getMember().getId().equals(member.getId())) {
-            alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, "new comment at " + posting.getTitle());
+
+        try {
+            if (!posting.getMember().getId().equals(member.getId())) {
+                alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, "new comment at " + posting.getTitle());
+            }
+        } catch(Exception e){
+           System.out.println(ErrorCode.ALARM_NOT_FOUND);
         }
     }
 

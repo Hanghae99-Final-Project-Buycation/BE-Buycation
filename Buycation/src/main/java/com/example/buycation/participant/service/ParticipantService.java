@@ -4,6 +4,7 @@ import com.example.buycation.alarm.dto.AlarmResponseDto;
 import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.common.exception.ErrorCode;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.participant.dto.ApplicationResponseDto;
 import com.example.buycation.participant.entity.Application;
@@ -65,7 +66,14 @@ public class ParticipantService {
         Application application = applicationMapper.toApplication(member,posting);
         applicationRepository.save(application);
         posting.add(application);
-        alarmService.createAlarm(posting.getMember(), AlarmType.PARTICIPANT, postingId, "new application for your posting from memberId " + member.getId());
+
+        try {
+            if (!posting.getMember().getId().equals(member.getId())) {
+                alarmService.createAlarm(posting.getMember(), AlarmType.APPLICATION, postingId, "new application for your posting from memberId " + member.getId());
+            }
+        } catch(Exception e){
+            System.out.println(ErrorCode.ALARM_NOT_FOUND);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -122,8 +130,12 @@ public class ParticipantService {
         posting.addMembers(1);
 
         applicationRepository.deleteById(applicationId);
+        try {
+            alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is accepted");
+        } catch(Exception e){
+            System.out.println(ErrorCode.ALARM_NOT_FOUND);
+        }
 
-        alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is accepted");
     }
 
     @Transactional
@@ -143,7 +155,13 @@ public class ParticipantService {
         }
 
         applicationRepository.deleteById(applicationId);
-        alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is reject");
+
+
+        try {
+            alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is reject");
+        } catch(Exception e){
+            System.out.println(ErrorCode.ALARM_NOT_FOUND);
+        }
     }
 
     @Transactional

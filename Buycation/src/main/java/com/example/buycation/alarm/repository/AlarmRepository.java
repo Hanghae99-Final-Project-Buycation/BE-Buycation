@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
-    List<Alarm> findAllByMemberOrderByIdDesc(Member member);
+    List<Alarm> findAllByMemberOrderByMemberDesc(Member member);
     Long countByReadFalseAndMember(Member member);
 
     void deleteAllByMember(Member member);
