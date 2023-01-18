@@ -13,11 +13,12 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class ReviewMapper {
 
-    public MemberReviewResponseDto toResponse(Participant participant) {
+    public MemberReviewResponseDto toResponse(Participant participant, boolean status) {
         return MemberReviewResponseDto.builder()
                 .postingId(participant.getPosting().getId())
                 .memberId(participant.getMember().getId())
                 .nickname(participant.getMember().getNickname())
+                .status(status)
                 .build();
     }
 

@@ -55,7 +55,7 @@ public class ProfileService {
             throw new CustomException(POSTING_PARTICIPANT_REVIEW);
         }
         //참가자에게만 리뷰 가능
-        if (participantRepository.findByPostingAndMember(posting,member)==null){
+        if (participantRepository.findByPostingAndMember(posting, member) == null) {
             throw new CustomException(POSTING_PARTICIPANT_TO_REVIEW);
         }
         //셀프리뷰금지
@@ -84,8 +84,12 @@ public class ProfileService {
         List<Participant> participants = participantRepository.findAllByPosting(posting);
         List<MemberReviewResponseDto> memberReviewResponseDtoList = new ArrayList<>();
         for (Participant p : participants) {
-            if (!p.getMember().getId().equals(member.getId())){
-                memberReviewResponseDtoList.add(reviewMapper.toResponse(p));
+            if (!p.getMember().getId().equals(member.getId())) {
+                boolean reviewCheck = false;
+                if (reviewRepository.findByPostingIdAndReviewerIdAndMember(postingId, member.getId(), p.getMember()) != null) {
+                    reviewCheck = true;
+                }
+                memberReviewResponseDtoList.add(reviewMapper.toResponse(p,reviewCheck));
             }
         }
         return memberReviewResponseDtoList;

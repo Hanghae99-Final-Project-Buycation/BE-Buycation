@@ -9,4 +9,5 @@ public class MemberReviewResponseDto {
     private Long postingId;
     private Long memberId;
     private String nickname;
+    private boolean status;
 }
