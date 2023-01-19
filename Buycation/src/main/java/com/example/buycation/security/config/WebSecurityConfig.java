@@ -40,7 +40,7 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-                .requestMatchers(PathRequest.toH2Console())
+//                .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
@@ -78,6 +78,7 @@ public class WebSecurityConfig {
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://www.buycation.shop.s3-website.ap-northeast-2.amazonaws.com");
         config.addAllowedOrigin("http://www.buycation.shop");
+
 
         config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);
 
