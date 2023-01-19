@@ -40,7 +40,6 @@ dependencies {
 
     //메일 dependency 추가
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-
 }
 
 tasks.named('test') {
