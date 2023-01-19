@@ -74,6 +74,7 @@ public class MemberService {
         if (!emailCheck.isStatus()){
             throw new CustomException(EMAIL_CERTIFICATION_FAIL);
         }
+        emailCheckRepository.delete(emailCheck);
 
         memberRepository.save(member);
     }
