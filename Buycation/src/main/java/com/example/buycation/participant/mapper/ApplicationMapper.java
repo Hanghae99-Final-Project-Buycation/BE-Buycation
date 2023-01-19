@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 public class ApplicationMapper {
 
     public ApplicationResponseDto toResponse(Application application) {
+        int reviewCount = application.getMember().getReviewCount();
+        /// by zero 예외 방지
+        if (application.getMember().getReviewCount()==0) reviewCount = 1;
         return ApplicationResponseDto.builder()
                 .applicationId(application.getId())
                 .nickname(application.getMember().getNickname())
                 .profileImage(application.getMember().getProfileImage())
-                .userScore(application.getMember().getUserScore())
+                .userScore(application.getMember().getUserScore()/reviewCount)
                 .build();
     }
 
