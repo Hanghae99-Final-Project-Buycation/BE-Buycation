@@ -76,7 +76,9 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://localhost:3000");
-        config.addAllowedOrigin("http://buycation-test.s3-website.ap-northeast-2.amazonaws.com");
+        config.addAllowedOrigin("http://www.buycation.shop.s3-website.ap-northeast-2.amazonaws.com");
+        config.addAllowedOrigin("http://www.buycation.shop");
+
 
         config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);
 
