@@ -23,6 +23,9 @@ public interface PostingRepository extends JpaRepository<Posting, Long> {
     @Query("SELECT p FROM Posting p where p.doneStatus = false and p.dueDate <= :currentDateTime")
     List<Posting> findUpdateData(@Param("currentDateTime")String currentDateTime);
 
+    @Query("SELECT p FROM Posting p where p.doneStatus = false and p.dueDate = :currentDateTime")
+    List<Posting> findAllByDueDateBefore30Minute(@Param("currentDateTime")String currentDateTime);
+
     @Modifying
     @Query("delete from Posting p where p.id in :PostingIds")
     void deleteAllByIdInQuery(@Param("PostingIds") List<Long> PostingIds);

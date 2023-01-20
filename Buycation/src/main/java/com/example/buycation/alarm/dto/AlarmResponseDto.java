@@ -10,7 +10,7 @@ import lombok.Getter;
 public class AlarmResponseDto {
     private Long alarmId;
     private AlarmType type;
-    private Boolean read;
+    private boolean read;
     private Long postingId;
     private String message;
     private String createdAt;

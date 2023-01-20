@@ -14,7 +14,7 @@ public class AlarmMapper {
                 .alarmId(alarm.getId())
                 .postingId(alarm.getPostingId())
                 .message(alarm.getMessage())
-                .read(alarm.getRead())
+                .read(alarm.getIsRead())
                 .type(alarm.getType())
                 .createdAt(alarm.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();

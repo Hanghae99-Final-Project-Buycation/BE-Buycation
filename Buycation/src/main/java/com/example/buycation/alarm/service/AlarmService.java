@@ -6,12 +6,13 @@ import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.mapper.AlarmMapper;
 import com.example.buycation.alarm.repository.AlarmRepository;
 import com.example.buycation.alarm.repository.EmitterRepository;
+import com.example.buycation.common.PageConfig.PageRequest;
+import com.example.buycation.common.PageConfig.PageResponse;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
-import com.example.buycation.members.member.repository.MemberRepository;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,6 +97,24 @@ public class AlarmService {
         return alarms.stream().map(alarm -> alarmMapper.toAlarmResponseDto(alarm)).toList();
     }
 
+    @Transactional(readOnly = true)
+    public PageResponse<AlarmResponseDto> getAlarmsPaging(UserDetailsImpl userDetails, PageRequest pageRequest) {
+
+        List<Alarm> alarms;
+        Long nextKey;
+
+        Member member = userDetails.getMember();
+
+        if(pageRequest.hasKey(pageRequest.getKey())){
+            alarms= alarmRepository.findTop15ByIdLessThanAndMemberOrderByIdDesc(pageRequest.getKey(), member);
+        }else{
+            alarms= alarmRepository.findTop15ByMemberOrderByIdDesc(member);
+        }
+        nextKey = alarms.stream().mapToLong(Alarm::getId).min().orElse(PageRequest.NONE_KEY);
+        return new PageResponse<>(pageRequest.next(nextKey)
+                                , alarms.stream().map(alarm -> alarmMapper.toAlarmResponseDto(alarm)).toList());
+    }
+
     @Transactional
     public String readAlarm(Long alarmId){
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(
@@ -119,9 +138,12 @@ public class AlarmService {
         alarmRepository.deleteAllByMember(member);
     }
 
+    @Transactional
     public Long getAlarmCount(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
-        Long count = alarmRepository.countByReadFalseAndMember(member);
+        Long count = alarmRepository.countByIsReadFalseAndMember(member);
         return count;
     }
+
+
 }
