@@ -1,10 +1,13 @@
 package com.example.buycation.comment.service;
 
+import com.example.buycation.alarm.entity.AlarmType;
+import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.dto.CommentRequestDto;
 import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.mapper.CommentMapper;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.common.exception.ErrorCode;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
@@ -26,9 +29,12 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final PostingRepository postingRepository;
 
+    private final AlarmService alarmService;
+
 
     @Transactional
     public void createComment(CommentRequestDto commentRequestDto, Member member, Long postingId) {
+
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
         //완료된 게시글 댓글작성 금지
@@ -39,6 +45,14 @@ public class CommentService {
         Comment comment = commentMapper.toComment(commentRequestDto, member, posting);
         commentRepository.save(comment);
         posting.add(comment);
+
+        try {
+            if (!posting.getMember().getId().equals(member.getId())) {
+                alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, "new comment at " + posting.getTitle());
+            }
+        } catch(Exception e){
+           System.out.println(ErrorCode.ALARM_NOT_FOUND);
+        }
     }
 
     @Transactional
