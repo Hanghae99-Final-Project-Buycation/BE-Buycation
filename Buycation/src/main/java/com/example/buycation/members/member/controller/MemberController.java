@@ -51,8 +51,9 @@ public class MemberController {
     }
 
     @GetMapping("/signup")
-    public ResponseMessage<MessageCode> checkNickname(@RequestParam("nickname") String nickname) {
-        memberService.checkNickname(nickname);
+    public ResponseMessage<MessageCode> checkNickname(@RequestParam("nickname") String nickname,
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        memberService.checkNickname(nickname, userDetails);
         return new ResponseMessage<>(NICKNAME_CHECK_SUCCESS, null);
     }
 

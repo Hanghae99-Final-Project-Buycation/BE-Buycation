@@ -67,11 +67,11 @@ public class MemberService {
         //이메일 인증 확인
         EmailCheck emailCheck = emailCheckRepository.findByEmail(member.getEmail());
         //이메일 확인 객체가 없으면 실패
-        if (emailCheck == null){
+        if (emailCheck == null) {
             throw new CustomException(EMAIL_CERTIFICATION_FAIL);
         }
         //이메일 확인 객체가 false면 실패
-        if (!emailCheck.isStatus()){
+        if (!emailCheck.isStatus()) {
             throw new CustomException(EMAIL_CERTIFICATION_FAIL);
         }
         emailCheckRepository.delete(emailCheck);
@@ -97,10 +97,24 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public void checkNickname(String nickname) {
+    public void checkNickname(String nickname, UserDetailsImpl userDetails) {
+        //닉네임 유효성 체크
+        if (!Pattern.matches("^(?=.*[a-z0*9가-힣])[a-z0-9가-힣]{2,10}$", nickname)) {
+            throw new CustomException(INVALID_NICKNAME_PATTERN);
+        }
+
         //중복체크
-        if (memberRepository.findByNickname(nickname).isPresent()) {
-            throw new CustomException(DUPLICATE_NICKNAME);
+        if (userDetails != null) {
+            //현재와 다른 닉네임으로 변경시 중복체크
+            if (!nickname.equals(userDetails.getMember().getNickname())) {
+                if (memberRepository.findByNickname(nickname).isPresent()) {
+                    throw new CustomException(DUPLICATE_NICKNAME);
+                }
+            }
+        } else {
+            if (memberRepository.findByNickname(nickname).isPresent()) {
+                throw new CustomException(DUPLICATE_NICKNAME);
+            }
         }
     }
 
