@@ -16,6 +16,7 @@ public class ApplicationMapper {
         if (application.getMember().getReviewCount()==0) reviewCount = 1;
         return ApplicationResponseDto.builder()
                 .applicationId(application.getId())
+                .memberId(application.getMember().getId())
                 .nickname(application.getMember().getNickname())
                 .profileImage(application.getMember().getProfileImage())
                 .userScore(application.getMember().getUserScore()/reviewCount)
