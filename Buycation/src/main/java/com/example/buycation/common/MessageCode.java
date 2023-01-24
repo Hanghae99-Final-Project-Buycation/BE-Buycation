@@ -49,7 +49,10 @@ public enum MessageCode {
     ALARM_SEARCH_SUCCESS("알림목록 조회에 성공하였습니다.", 200),
     ALARM_READ_SUCCESS("알림 읽기 처리에 성공하였습니다.", 200),
     ALARM_DELETE_SUCCESS("알림 삭제에 성공하였습니다.", 200),
-    ALARM_COUNT_SUCCESS("알림 갯수 조회 성공하였습니다.", 200);
+    ALARM_COUNT_SUCCESS("알림 갯수 조회 성공하였습니다.", 200),
+
+    CHATROOM_SEARCH_SUCCESS("참여중인 톡방 조회에 성공하였습니다.", 200),
+    TALK_SEARCH_SUCCESS("톡 내용 조회에 성공하였습니다.", 200);
     private final String msg;
     private final int statusCode;
 }
