@@ -8,14 +8,11 @@ import com.example.buycation.common.PageConfig.PageResponse;
 import com.example.buycation.common.ResponseMessage;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
 import java.io.IOException;
-import java.util.List;
 
 import static com.example.buycation.common.MessageCode.*;
 
@@ -41,8 +38,9 @@ public class AlarmController {
 
     @GetMapping("")
     public ResponseMessage<PageResponse<AlarmResponseDto>> getAlarmsPaging(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                                   @RequestBody PageRequest pageRequest){
-        PageResponse<AlarmResponseDto> alarms = alarmService.getAlarmsPaging(userDetails, pageRequest);
+                                                                   @RequestParam(value = "key" , required = false) Long key){
+
+        PageResponse<AlarmResponseDto> alarms = alarmService.getAlarmsPaging(userDetails, new PageRequest(key));
         return new ResponseMessage<PageResponse<AlarmResponseDto>>(ALARM_SEARCH_SUCCESS, alarms);
     }
 
@@ -68,7 +66,5 @@ public class AlarmController {
         alarmService.deleteAllAlarms(userDetails);
         return new ResponseMessage<>(ALARM_DELETE_SUCCESS, null);
     }
-
-
 
 }

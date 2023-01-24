@@ -16,7 +16,10 @@ public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     List<Alarm> findTop15ByIdLessThanAndMemberOrderByIdDesc(Long id, Member member);
     List<Alarm> findTop15ByMemberOrderByIdDesc(Member member);
 
+    List<Alarm> findTop3ByIdLessThanAndMemberOrderByIdDesc(Long id, Member member);
+    List<Alarm> findTop3ByMemberOrderByIdDesc(Member member);
     Long countByIsReadFalseAndMember(Member member);
+
 
     void deleteAllByMember(Member member);
 
