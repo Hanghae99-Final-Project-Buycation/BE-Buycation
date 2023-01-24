@@ -63,9 +63,13 @@ public class PostingService {
     public PostingResponseDto detailPosting(Long postingId, UserDetailsImpl userDetails) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
         boolean myPosting = false;
-        if (userDetails != null){
-            if (userDetails.getMember().getId().equals(posting.getMember().getId())){
+        boolean participant = false;
+        if (userDetails != null) {
+            if (userDetails.getMember().getId().equals(posting.getMember().getId())) {
                 myPosting = true;
+            }
+            if (participantRepository.findByPostingAndMember(posting, userDetails.getMember()) != null) {
+                participant = true;
             }
         }
         List<Comment> comments = commentRepository.findAllByPostingOrderByCreatedAtDesc(posting);
@@ -73,7 +77,7 @@ public class PostingService {
         for (Comment c : comments) {
             commentList.add(commentMapper.toResponse(c));
         }
-        return postingMapper.toResponse(posting, commentList, myPosting);
+        return postingMapper.toResponse(posting, commentList, myPosting, participant);
     }
 
     @Transactional
