@@ -21,6 +21,9 @@ public class Alarm extends TimeStamped {
     private Long postingId;
 
     @Column
+    private String title;
+
+    @Column
     private String message;
 
     @Column
@@ -35,12 +38,13 @@ public class Alarm extends TimeStamped {
     private Member member;
 
     @Builder
-    public Alarm(Long postingId, String message, Boolean isRead, AlarmType type, Member member){
+    public Alarm(Long postingId, String title, String message, Boolean isRead, AlarmType type, Member member){
         this.message = message;
         this.isRead = isRead;
         this.type = type;
         this.member = member;
         this.postingId = postingId;
+        this.title = title;
     }
 
     public void read() {
