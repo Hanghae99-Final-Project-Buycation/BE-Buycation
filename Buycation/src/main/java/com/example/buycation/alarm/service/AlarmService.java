@@ -10,6 +10,7 @@ import com.example.buycation.common.PageConfig.PageRequest;
 import com.example.buycation.common.PageConfig.PageResponse;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
+import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -74,9 +75,9 @@ public class AlarmService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String content){
+    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
 
-        Alarm alarm = new Alarm(postingId, content, false, alarmType, member);
+        Alarm alarm = new Alarm(postingId, title, alarmType.getMessage(), false, alarmType, member);
         alarmRepository.save(alarm);
 
         String id = String.valueOf(member.getId());

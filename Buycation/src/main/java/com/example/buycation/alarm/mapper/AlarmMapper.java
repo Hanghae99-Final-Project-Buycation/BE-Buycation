@@ -15,6 +15,7 @@ public class AlarmMapper {
         return AlarmResponseDto.builder()
                 .alarmId(alarm.getId())
                 .postingId(alarm.getPostingId())
+                .title(alarm.getTitle())
                 .message(alarm.getMessage())
                 .read(alarm.getIsRead())
                 .type(alarm.getType())

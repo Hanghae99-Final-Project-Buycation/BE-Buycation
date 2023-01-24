@@ -76,11 +76,11 @@ public class Scheduler {
 
     @Scheduled(cron = "0 * * * * *")
     @Transactional(readOnly = true)
-    public void alarm30minutesBefore() {
-        List<Posting> postingList = postingRepository.findAllByDueDateBefore30Minute( LocalDateTime.now().plusMinutes(30).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+    public void alarm60minutesBefore() {
+        List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute( LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         for (Posting posting:postingList) {
             posting.getParticipantList().stream().forEach(participant -> {
-                alarmService.createAlarm(participant.getMember(), AlarmType.PARTICIPATION, posting.getId(), posting.getTitle() + " 공동구매 모임 30분 전 알림");
+                alarmService.createAlarm(participant.getMember(), AlarmType.REMIND, posting.getId(), posting.getTitle());
             });
         }
     }
