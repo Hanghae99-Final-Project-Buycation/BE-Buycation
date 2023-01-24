@@ -12,6 +12,7 @@ public class AlarmResponseDto {
     private AlarmType type;
     private boolean read;
     private Long postingId;
+    private String title;
     private String message;
     private String createdAt;
 }
