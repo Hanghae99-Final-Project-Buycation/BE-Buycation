@@ -28,4 +28,5 @@ public class PostingResponseDto {
     private List<CommentResponseDto> commentList;
     private boolean doneStatus;
     private boolean myPosting;
+    private boolean participant;
 }
