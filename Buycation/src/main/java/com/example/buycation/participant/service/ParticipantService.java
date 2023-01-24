@@ -69,7 +69,7 @@ public class ParticipantService {
 
         try {
             if (!posting.getMember().getId().equals(member.getId())) {
-                alarmService.createAlarm(posting.getMember(), AlarmType.APPLICATION, postingId, "new application for your posting from memberId " + member.getId());
+                alarmService.createAlarm(posting.getMember(),  AlarmType.APPLICATION, postingId, posting.getTitle());
             }
         } catch(Exception e){
             System.out.println(ErrorCode.ALARM_NOT_FOUND);
@@ -131,7 +131,7 @@ public class ParticipantService {
 
         applicationRepository.deleteById(applicationId);
         try {
-            alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is accepted");
+            alarmService.createAlarm(application.getMember(), AlarmType.ACCEPT, postingId,  posting.getTitle());
         } catch(Exception e){
             System.out.println(ErrorCode.ALARM_NOT_FOUND);
         }
@@ -158,7 +158,7 @@ public class ParticipantService {
 
 
         try {
-            alarmService.createAlarm(application.getMember(), AlarmType.PARTICIPATION, postingId, "Your application for " + posting.getTitle() + "is reject");
+            alarmService.createAlarm(application.getMember(), AlarmType.REJECT, postingId, posting.getTitle());
         } catch(Exception e){
             System.out.println(ErrorCode.ALARM_NOT_FOUND);
         }

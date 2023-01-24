@@ -48,7 +48,7 @@ public class CommentService {
 
         try {
             if (!posting.getMember().getId().equals(member.getId())) {
-                alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, "new comment at " + posting.getTitle());
+                alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, posting.getTitle());
             }
         } catch(Exception e){
            System.out.println(ErrorCode.ALARM_NOT_FOUND);
