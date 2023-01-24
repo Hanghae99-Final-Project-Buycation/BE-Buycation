@@ -19,6 +19,7 @@ import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
 import com.example.buycation.security.UserDetailsImpl;
+import com.example.buycation.talk.service.TalkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import static com.example.buycation.common.exception.ErrorCode.WRONG_SORT_ERROR;
 @RequiredArgsConstructor
 public class PostingService {
 
+    private final TalkService talkService;
     private final PostingRepository postingRepository;
     private final PostingMapper postingMapper;
     private final CommentRepository commentRepository;
@@ -57,6 +59,8 @@ public class PostingService {
         Participant participant = applicationMapper.toParticipant(application);
         participantRepository.save(participant);
         posting.add(participant);
+
+        talkService.createRoom(posting);
     }
 
     @Transactional(readOnly = true)
