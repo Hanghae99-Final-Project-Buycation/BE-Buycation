@@ -35,13 +35,17 @@ public class AlarmService {
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
 
-    public SseEmitter subscribe(Long memberId, String lastEventId) throws IOException{
+    public SseEmitter subscribe(UserDetailsImpl userDetails, String lastEventId) throws IOException{
+        Member member = userDetails.getMember();
+        Long memberId = member.getId();
         String emitterId = memberId + "_" + System.currentTimeMillis();
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         try {
             emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
             emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
-            sendAlarm(emitter, memberId + "_" + System.currentTimeMillis(), emitterId, "connect check : " + emitterId);
+
+            Long count = alarmRepository.countByIsReadFalseAndMember(member);
+            sendAlarm(emitter, memberId + "_" + System.currentTimeMillis(), emitterId, "count : " + count);
 
             if(!lastEventId.isEmpty()){
                 sendLostAlarm(emitter, memberId, lastEventId);
