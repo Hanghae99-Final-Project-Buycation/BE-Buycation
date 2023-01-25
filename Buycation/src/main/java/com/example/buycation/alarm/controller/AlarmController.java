@@ -25,7 +25,7 @@ public class AlarmController {
     public final AlarmService alarmService;
 
     //memberId는 추후에 수정 필수
-    @GetMapping(value = "/subscribe/{memberId}", produces= MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/subscribe", produces= MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                 @RequestParam(required = false, defaultValue = "")String lastEventId) throws IOException{
 
