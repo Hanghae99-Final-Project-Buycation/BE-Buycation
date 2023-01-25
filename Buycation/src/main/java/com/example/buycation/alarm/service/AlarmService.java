@@ -45,7 +45,7 @@ public class AlarmService {
             emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
 
             Long count = alarmRepository.countByIsReadFalseAndMember(member);
-            sendAlarm(emitter, memberId + "_" + System.currentTimeMillis(), emitterId, "count : " + count);
+            sendAlarm(emitter, memberId + "_" + System.currentTimeMillis(), emitterId, count);
 
             if(!lastEventId.isEmpty()){
                 sendLostAlarm(emitter, memberId, lastEventId);
