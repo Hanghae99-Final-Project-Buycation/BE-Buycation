@@ -39,7 +39,7 @@ public class Scheduler {
     private final AlarmService alarmService;
 
     // 초, 분, 시, 일, 월, 주 업데이트 순서
-    @Scheduled(cron = "0 * * * * *")
+    //@Scheduled(cron = "0 * * * * *")
     @Transactional
     public void updatePostings() throws InterruptedException {
         System.out.println("게시글 업데이트 시작");
@@ -74,7 +74,7 @@ public class Scheduler {
         System.out.println("게시글 업데이트 종료");
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    //@Scheduled(cron = "0 * * * * *")
     @Transactional(readOnly = true)
     public void alarm60minutesBefore() {
         List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute( LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
@@ -85,7 +85,7 @@ public class Scheduler {
         }
     }
 
-    @Scheduled(cron = "0 0 3 * * *")
+    //@Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void deleteOldAlarmAfterAMonth() {
         alarmRepository.deleteAlarmByDueDateBeforeAMonth( LocalDateTime.now().minusMonths(1));
