@@ -20,7 +20,6 @@ import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +31,6 @@ import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPD
 import static com.example.buycation.common.exception.ErrorCode.NOT_FINISH_PARTICIPATION;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
-import static com.example.buycation.common.exception.ErrorCode.WRONG_CATEGORY_ERROR;
-import static com.example.buycation.common.exception.ErrorCode.WRONG_SORT_ERROR;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +59,9 @@ public class PostingService {
     @Transactional(readOnly = true)
     public PostingResponseDto detailPosting(Long postingId, UserDetailsImpl userDetails) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
+        //내 게시글인지 체크해주기
         boolean myPosting = false;
+        //참가자인지 체크해주기
         boolean participant = false;
         if (userDetails != null) {
             if (userDetails.getMember().getId().equals(posting.getMember().getId())) {
@@ -151,27 +150,7 @@ public class PostingService {
 
     @Transactional(readOnly = true)
     public List<MainPostingResponseDto> searchPosting(String category, String search, String sort) {
-        Sort sortCheck = switch (sort) {
-            case "금액 순" -> Sort.by(Sort.Direction.ASC, "perBudget");
-            case "인원 순" -> Sort.by(Sort.Direction.ASC, "totalMembers");
-            case "기한 순" -> Sort.by(Sort.Direction.ASC, "dueDate");
-            case "최신 순" -> Sort.by(Sort.Direction.DESC, "createdAt");
-            case "" -> Sort.by(Sort.Direction.DESC, "createdAt");
-            default -> throw new CustomException(WRONG_SORT_ERROR);
-        };
-        String categoryCheck = switch (category) {
-            case "전체" -> "";
-            case "음식" -> "음식";
-            case "물건" -> "물건";
-            case "" -> "";
-            default -> throw new CustomException(WRONG_CATEGORY_ERROR);
-        };
-        // "%", "_" 가 SQL에서 LIKE의 속성으로 인식 됨으로 escape 처리를 하기 위한 코드
-        if (search.contains("%") || search.contains("_")) {
-            search = search.replace("%", "|%");
-            search = search.replace("_", "|_");
-        }
-        List<Posting> postings = postingRepository.findAllByQuery(categoryCheck, search, sortCheck);
+        List<Posting> postings = postingRepository.findAllByQuerydsl(category, search, sort);
         List<MainPostingResponseDto> postingList = new ArrayList<>();
         for (Posting p : postings) {
             postingList.add(postingMapper.toResponse(p));

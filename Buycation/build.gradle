@@ -1,7 +1,15 @@
+buildscript { // 쿼리DSL추가 빌드
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.7'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    // 쿼리DSL추가 빌드
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.example'
@@ -44,6 +52,10 @@ dependencies {
 
     //메일 dependency 추가
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    //쿼리dsl dependency 추가
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 }
 
 tasks.named('test') {
@@ -53,4 +65,23 @@ tasks.named('test') {
 //plain jar 파일을 만들어지 않기 위해 추가
 jar {
     enabled = false
+}
+
+// 쿼리DSL추가 빌드
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl { //쿼리DSL추가 빌드
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+sourceSets { //쿼리DSL추가 빌드
+    main.java.srcDir querydslDir
+}
+configurations { //쿼리DSL추가 빌드
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl { //쿼리DSL추가 빌드
+    options.annotationProcessorPath = configurations.querydsl
 }
