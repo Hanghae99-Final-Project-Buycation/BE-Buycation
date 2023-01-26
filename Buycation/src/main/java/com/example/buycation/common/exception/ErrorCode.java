@@ -41,6 +41,9 @@ public enum ErrorCode {
     PARTICIPANT_NOT_FOUND("존재하지 않는 참가자 입니다.",404),
     INCORRECT_PASSWORD("비밀번호가 일치하지 않습니다.",404),
 
+    ALARM_NOT_FOUND("존재하지 않는 알림 입니다.",404),
+    TALKROOM_NOT_FOUND("존재하지 않는 톡방 입니다.", 404),
+
     //401 잘못된 권한 접근
     AUTHORIZATION_DELETE_FAIL("삭제 권한이 없습니다.", 401),
     AUTHORIZATION_UPDATE_FAIL("수정 권한이 없습니다.", 401),
@@ -48,14 +51,17 @@ public enum ErrorCode {
     AUTHORIZATION_LOOKUP_FAIL("조회 권한이 없습니다.", 401),
     AUTHORIZATION_APPLICANT_LOOKUP_FAIL("지원자 조회 권한이 없습니다.", 401),
     WRITER_PARTICIPATION_CANAEL("작성자는 참가취소를 할 수 없습니다. 게시글을 삭제하여 주세요.", 401),
+    AUTHORIZATION_TALKROOM("톡방 참가 권한이 없습니다.", 401),
 
     //필터부분 에러
     FORBIDDEN_ERROR("서버 사용 권한이 없습니다.",403),
     TOKEN_ERROR("토큰이 유효하지 않습니다.",401),
     USER_NOT_FOUND("존재하지 않는 유저 입니다.",404),
 
-    INTERNAL_SERVER_ERROR("서버 에러입니다. 서버 팀에 연락주세요!", 500);
+    INTERNAL_SERVER_ERROR("서버 에러입니다. 서버 팀에 연락주세요!", 500),
 
+    //알림 관련 에러
+    SUBSCRIBE_FAIL("알림 구독에 실해하였습니다.", 500);
 
     private final String msg;
     private final int statusCode;
