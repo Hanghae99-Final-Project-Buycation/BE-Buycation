@@ -41,6 +41,7 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
 //                .requestMatchers(PathRequest.toH2Console())
+                .antMatchers("/ws/**", "send/**", "talk/**")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 

@@ -29,7 +29,7 @@ public class AlarmController {
     public SseEmitter subscribe(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                 @RequestParam(required = false, defaultValue = "")String lastEventId) throws IOException{
 
-        System.out.println("lastEventId :::: " + lastEventId);
+        System.out.println("lastEventId >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SSE 연결 " + lastEventId);
         return alarmService.subscribe(userDetails, lastEventId);
 
     }
