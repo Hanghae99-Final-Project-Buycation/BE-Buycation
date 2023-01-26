@@ -23,7 +23,7 @@ public class TalkMapper {
         return Talk.builder()
                 .sender(talkRequestDto.getSender())
                 .message(talkRequestDto.getMessage())
-                .talkRoom(chatRoom)
+                .chatRoom(chatRoom)
                 .build();
     }
 }

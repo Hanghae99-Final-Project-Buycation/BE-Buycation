@@ -9,6 +9,7 @@ public class ChatRoomResponseDto {
     private Long id;
     private Long postingId;
     private String title;
+    private String image;
     private String dueDate;
     private int currentMembers;
 

@@ -19,13 +19,11 @@ public class TalkController {
     @MessageMapping("/{roomId}")
     @SendTo("/talk/{roomId}")
     public TalkResponseDto talk(@DestinationVariable Long roomId, TalkRequestDto talkRequestDto){
-        System.out.println("talk ==> " + talkRequestDto.getMessage());
         TalkResponseDto newTalk = talkService.createMessage(roomId, talkRequestDto);
         return TalkResponseDto.builder()
                 .talkRoomId(roomId)
                 .sender(newTalk.getSender())
                 .message(newTalk.getMessage())
                 .build();
-
     }
 }
