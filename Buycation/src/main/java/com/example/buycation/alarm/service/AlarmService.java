@@ -10,10 +10,8 @@ import com.example.buycation.common.PageConfig.PageRequest;
 import com.example.buycation.common.PageConfig.PageResponse;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
-import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.example.buycation.common.exception.ErrorCode.ALARM_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
@@ -30,7 +27,7 @@ import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
-    private static final Long DEFAULT_TIMEOUT =60 * 60 * 1000L;
+    private static final Long DEFAULT_TIMEOUT =30 * 60 * 1000L;
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
@@ -81,7 +78,7 @@ public class AlarmService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
 
-        Alarm alarm = new Alarm(postingId, title, alarmType.getMessage(), false, alarmType, member);
+        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
         sendCountAlarm(member);
     }
@@ -124,6 +121,7 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarm.read();
+        alarmRepository.flush();
         sendCountAlarm(member);
     }
 

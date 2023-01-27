@@ -38,7 +38,7 @@ public class Alarm extends TimeStamped {
     private Member member;
 
     @Builder
-    public Alarm(Long postingId, String title, String message, Boolean isRead, AlarmType type, Member member){
+    public Alarm(Long postingId, String title, AlarmType type, String message, Boolean isRead,  Member member){
         this.message = message;
         this.isRead = isRead;
         this.type = type;
