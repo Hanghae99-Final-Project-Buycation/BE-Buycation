@@ -89,8 +89,9 @@ public class AlarmService {
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
+                    Long count = alarmRepository.countByIsReadFalseAndMember(member);
                     emitterRepository.saveEventCache(key, alarm);
-                    sendAlarm(emitter, eventId, key, alarmMapper.toRealtimeAlarmDto(alarm));
+                    sendAlarm(emitter, eventId, key, count /*alarmMapper.toRealtimeAlarmDto(alarm)*/ );
                 }
         );
     }
