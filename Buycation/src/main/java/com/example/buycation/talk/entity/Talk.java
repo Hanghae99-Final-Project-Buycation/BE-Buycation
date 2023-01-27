@@ -28,7 +28,7 @@ public class Talk extends TimeStamped {
     private ChatRoom chatRoom;
 
     @Builder
-    public Talk(String sender, String message, ChatRoom talkRoom) {
+    public Talk(String sender, String message, ChatRoom chatRoom) {
         this.sender = sender;
         this.message = message;
         this.chatRoom = chatRoom;

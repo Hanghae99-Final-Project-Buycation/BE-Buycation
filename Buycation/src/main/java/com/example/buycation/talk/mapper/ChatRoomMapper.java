@@ -11,6 +11,7 @@ public class ChatRoomMapper {
                 .id(talkRoom.getId())
                 .postingId(talkRoom.getPosting().getId())
                 .title(talkRoom.getPosting().getTitle())
+                .image(talkRoom.getPosting().getImage())
                 .currentMembers(talkRoom.getPosting().getCurrentMembers())
                 .dueDate(talkRoom.getPosting().getDueDate())
                 .build();

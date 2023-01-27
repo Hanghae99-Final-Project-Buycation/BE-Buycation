@@ -6,6 +6,7 @@ import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.security.UserDetailsImpl;
+import com.example.buycation.talk.dto.TalkEntryResponseDto;
 import com.example.buycation.talk.dto.TalkRequestDto;
 import com.example.buycation.talk.dto.TalkResponseDto;
 import com.example.buycation.talk.dto.ChatRoomResponseDto;
@@ -37,8 +38,7 @@ public class TalkService {
     public List<ChatRoomResponseDto> findAllRoom(UserDetailsImpl userDetails){
         Member member = userDetails.getMember();
         List<Posting> postings = participantRepository.findAllByMember(member).stream().map(participant -> participant.getPosting()).toList();
-        System.out.println("postings count ==> " + postings.size());
-        List<ChatRoom> talkRooms = chatRoomRepository.findAllByPostingIn(postings);;
+        List<ChatRoom> talkRooms = chatRoomRepository.findAllByPostingIn(postings);
         return talkRooms.stream().map(chatRoomMapper::toTalkRoomResponseDto).toList();
     }
 
@@ -49,23 +49,28 @@ public class TalkService {
 
 
     @Transactional
-    public List<TalkResponseDto> findAllMessageByTalkRoomId(Long roomId, UserDetailsImpl userDetails) {
+    public TalkEntryResponseDto findAllMessageByTalkRoomId(Long roomId, UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
                 ()-> new CustomException(TALKROOM_NOT_FOUND)
         );
 
-        Long boo = chatRoom.getPosting().getParticipantList()
+        Long checkPaticipantInChatRoom = chatRoom.getPosting().getParticipantList()
                 .stream()
                 .filter(participant -> participant.getMember().getId().equals(member.getId()))
                 .count();
-        System.out.println("boo :: " + boo);
-        if(boo.equals(0)){
+
+        if(checkPaticipantInChatRoom.equals(0)){
             throw new CustomException(AUTHORIZATION_TALKROOM);
         }
 
         List<Talk> talks = talkRepository.findAllByChatRoom(chatRoom);
-        return talks.stream().map(talk -> talkMapper.toTalkResponseDto(talk)).toList();
+        List<TalkResponseDto> talksDto = talks.stream().map(talk -> talkMapper.toTalkResponseDto(talk)).toList();
+
+        return TalkEntryResponseDto.builder()
+                .nickname(member.getNickname())
+                .talks(talksDto)
+                .build();
     }
 
 

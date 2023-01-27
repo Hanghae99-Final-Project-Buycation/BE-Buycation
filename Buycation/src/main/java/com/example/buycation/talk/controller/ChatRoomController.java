@@ -3,6 +3,7 @@ package com.example.buycation.talk.controller;
 
 import com.example.buycation.common.ResponseMessage;
 import com.example.buycation.security.UserDetailsImpl;
+import com.example.buycation.talk.dto.TalkEntryResponseDto;
 import com.example.buycation.talk.dto.TalkResponseDto;
 import com.example.buycation.talk.dto.ChatRoomResponseDto;
 import com.example.buycation.talk.service.TalkService;
@@ -33,7 +34,7 @@ public class ChatRoomController {
     @GetMapping("/room/{roomId}")
     public ResponseMessage<?> joinChatRoom(@PathVariable Long roomId,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
-        List<TalkResponseDto> talkList = talkService.findAllMessageByTalkRoomId(roomId, userDetails);
-        return new ResponseMessage<List<TalkResponseDto>>(TALK_SEARCH_SUCCESS, talkList);
+        TalkEntryResponseDto talkList = talkService.findAllMessageByTalkRoomId(roomId, userDetails);
+        return new ResponseMessage<TalkEntryResponseDto>(TALK_SEARCH_SUCCESS, talkList);
     }
 }
