@@ -11,8 +11,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class ChatRoom {
 
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne

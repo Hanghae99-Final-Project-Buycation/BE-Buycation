@@ -15,6 +15,7 @@ public class EmitterRepository {
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
     public SseEmitter save(String memberId, SseEmitter sseEmitter){
+        System.out.println("sseEmitter 생성 Id  ==========================================> " + memberId);
         sseEmitterMap.put(memberId, sseEmitter);
         return sseEmitter;
     };
