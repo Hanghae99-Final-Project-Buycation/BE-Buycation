@@ -66,7 +66,10 @@ public class TalkService {
 
         List<Talk> talks = talkRepository.findAllByChatRoom(chatRoom);
         List<TalkResponseDto> talksDto = talks.stream().map(talk -> talkMapper.toTalkResponseDto(talk)).toList();
-
+        System.out.println("방 번호 >>>>>>>>>>>>>>>>>>>>>>>>>> " + roomId);
+        for (Talk talk:talks) {
+            System.out.println("time : " + talk.getChatRoom() + " sender : " + talk.getSender() + " message : " + talk.getMessage());
+        }
         return TalkEntryResponseDto.builder()
                 .nickname(member.getNickname())
                 .talks(talksDto)
