@@ -78,6 +78,8 @@ public class WebSecurityConfig {
 
         config.addAllowedOrigin("http://buycation-test.s3-website.ap-northeast-2.amazonaws.com/");
 
+        config.addAllowedOrigin("http://54.180.87.207:8080/");
+
         config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);
 
         config.addAllowedMethod("*");
