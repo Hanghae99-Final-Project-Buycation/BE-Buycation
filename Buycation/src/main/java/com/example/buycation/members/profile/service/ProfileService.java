@@ -120,7 +120,7 @@ public class ProfileService {
         List<Participant> participants = participantRepository.findAllByMember(member);
         List<MainPostingResponseDto> postingList = new ArrayList<>();
         for (Participant p : participants) {
-            if (p.getMember() != member) {
+            if (p.getPosting().getMember() != member) {
                 postingList.add(postingMapper.toResponse(p.getPosting()));
             }
         }
