@@ -83,25 +83,21 @@ public class AlarmService {
 
         Alarm alarm = new Alarm(postingId, title, alarmType.getMessage(), false, alarmType, member);
         alarmRepository.save(alarm);
+        sendCountAlarm(member);
+    }
 
+    public void sendCountAlarm(Member member) {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
-                    emitterRepository.saveEventCache(key, alarm);
-                    sendAlarm(emitter, eventId, key, count /*alarmMapper.toRealtimeAlarmDto(alarm)*/ );
+                    sendAlarm(emitter, eventId, key, count);
                 }
         );
     }
 
-    @Transactional
-    public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails){
-        Member member = userDetails.getMember();
-        List<Alarm> alarms = alarmRepository.findAllByMemberOrderByMemberDesc(member);
-        return alarms.stream().map(alarm -> alarmMapper.toAlarmResponseDto(alarm)).toList();
-    }
 
     @Transactional(readOnly = true)
     public PageResponse<AlarmResponseDto> getAlarmsPaging(UserDetailsImpl userDetails, PageRequest pageRequest) {
@@ -122,26 +118,30 @@ public class AlarmService {
     }
 
     @Transactional
-    public String readAlarm(Long alarmId){
+    public void readAlarm(Long alarmId, UserDetailsImpl userDetails){
+        Member member = userDetails.getMember();
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarm.read();
-        return "read complete " + alarmId;
+        sendCountAlarm(member);
     }
 
     @Transactional
-    public void deleteAlarm(Long alarmId) {
+    public void deleteAlarm(Long alarmId, UserDetailsImpl userDetails) {
+        Member member = userDetails.getMember();
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarmRepository.deleteById(alarmId);
+        sendCountAlarm(member);
     }
 
     @Transactional
     public void deleteAllAlarms(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
         alarmRepository.deleteAllByMember(member);
+        sendCountAlarm(member);
     }
 
     @Transactional
@@ -150,6 +150,7 @@ public class AlarmService {
         Long count = alarmRepository.countByIsReadFalseAndMember(member);
         return count;
     }
+
 
 
 }

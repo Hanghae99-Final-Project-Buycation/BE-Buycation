@@ -50,13 +50,14 @@ public class AlarmController {
     }
 
     @PatchMapping("/{alarmId}")
-    public ResponseMessage<String> readAlarm(@PathVariable Long alarmId){
-        return new ResponseMessage<>(ALARM_READ_SUCCESS, alarmService.readAlarm(alarmId));
+    public ResponseMessage<?> readAlarm(@PathVariable Long alarmId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        alarmService.readAlarm(alarmId, userDetails);
+        return new ResponseMessage<>(ALARM_READ_SUCCESS, null);
     }
 
     @DeleteMapping("/{alarmId}")
-    public ResponseMessage<String> deleteAlarm(@PathVariable Long alarmId){
-        alarmService.deleteAlarm(alarmId);
+    public ResponseMessage<String> deleteAlarm(@PathVariable Long alarmId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        alarmService.deleteAlarm(alarmId, userDetails);
         return new ResponseMessage<>(ALARM_DELETE_SUCCESS, null);
     }
 
