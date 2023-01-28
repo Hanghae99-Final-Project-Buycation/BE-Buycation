@@ -19,6 +19,7 @@ import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
 import com.example.buycation.security.UserDetailsImpl;
+import com.example.buycation.talk.repository.ChatRoomRepository;
 import com.example.buycation.talk.service.TalkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,8 @@ public class PostingService {
     private final ApplicationMapper applicationMapper;
     private final ParticipantRepository participantRepository;
     private final ApplicationRepository applicationRepository;
+
+    private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
@@ -148,6 +151,8 @@ public class PostingService {
 
         List<Participant> participants = participantRepository.findAllByPosting(posting);
         if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
+
+        chatRoomRepository.deleteByPosting(posting);
 
         postingRepository.deleteById(postingId);
     }

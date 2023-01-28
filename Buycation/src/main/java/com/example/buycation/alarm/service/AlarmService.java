@@ -10,10 +10,8 @@ import com.example.buycation.common.PageConfig.PageRequest;
 import com.example.buycation.common.PageConfig.PageResponse;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
-import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.example.buycation.common.exception.ErrorCode.ALARM_NOT_FOUND;
 import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
@@ -30,7 +27,7 @@ import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
-    private static final Long DEFAULT_TIMEOUT =60 * 60 * 1000L;
+    private static final Long DEFAULT_TIMEOUT =30 * 60 * 1000L;
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
@@ -81,27 +78,23 @@ public class AlarmService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
 
-        Alarm alarm = new Alarm(postingId, title, alarmType.getMessage(), false, alarmType, member);
+        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
+        sendCountAlarm(member);
+    }
 
+    public void sendCountAlarm(Member member) {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
-                    emitterRepository.saveEventCache(key, alarm);
-                    sendAlarm(emitter, eventId, key, count /*alarmMapper.toRealtimeAlarmDto(alarm)*/ );
+                    sendAlarm(emitter, eventId, key, count);
                 }
         );
     }
 
-    @Transactional
-    public List<AlarmResponseDto> getAlarms(UserDetailsImpl userDetails){
-        Member member = userDetails.getMember();
-        List<Alarm> alarms = alarmRepository.findAllByMemberOrderByMemberDesc(member);
-        return alarms.stream().map(alarm -> alarmMapper.toAlarmResponseDto(alarm)).toList();
-    }
 
     @Transactional(readOnly = true)
     public PageResponse<AlarmResponseDto> getAlarmsPaging(UserDetailsImpl userDetails, PageRequest pageRequest) {
@@ -122,26 +115,31 @@ public class AlarmService {
     }
 
     @Transactional
-    public String readAlarm(Long alarmId){
+    public void readAlarm(Long alarmId, UserDetailsImpl userDetails){
+        Member member = userDetails.getMember();
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarm.read();
-        return "read complete " + alarmId;
+        alarmRepository.flush();
+        sendCountAlarm(member);
     }
 
     @Transactional
-    public void deleteAlarm(Long alarmId) {
+    public void deleteAlarm(Long alarmId, UserDetailsImpl userDetails) {
+        Member member = userDetails.getMember();
         Alarm alarm = alarmRepository.findById(alarmId).orElseThrow(
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarmRepository.deleteById(alarmId);
+        sendCountAlarm(member);
     }
 
     @Transactional
     public void deleteAllAlarms(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
         alarmRepository.deleteAllByMember(member);
+        sendCountAlarm(member);
     }
 
     @Transactional
@@ -150,6 +148,7 @@ public class AlarmService {
         Long count = alarmRepository.countByIsReadFalseAndMember(member);
         return count;
     }
+
 
 
 }
