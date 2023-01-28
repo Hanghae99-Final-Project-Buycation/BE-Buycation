@@ -3,6 +3,7 @@ package com.example.buycation.talk.service;
 
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
+import com.example.buycation.members.member.repository.MemberRepository;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.security.UserDetailsImpl;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_TALKROOM;
 import static com.example.buycation.common.exception.ErrorCode.TALKROOM_NOT_FOUND;
@@ -31,6 +33,7 @@ public class TalkService {
     private final ChatRoomRepository chatRoomRepository;
     private final TalkRepository talkRepository;
     private final ParticipantRepository participantRepository;
+    private final MemberRepository memberRepository;
     private final ChatRoomMapper chatRoomMapper;
     private final TalkMapper talkMapper;
 
@@ -66,10 +69,7 @@ public class TalkService {
 
         List<Talk> talks = talkRepository.findAllByChatRoom(chatRoom);
         List<TalkResponseDto> talksDto = talks.stream().map(talk -> talkMapper.toTalkResponseDto(talk)).toList();
-        System.out.println("방 번호 >>>>>>>>>>>>>>>>>>>>>>>>>> " + roomId);
-        for (Talk talk:talks) {
-            System.out.println("time : " + talk.getChatRoom() + " sender : " + talk.getSender() + " message : " + talk.getMessage());
-        }
+
         return TalkEntryResponseDto.builder()
                 .nickname(member.getNickname())
                 .talks(talksDto)
@@ -79,7 +79,11 @@ public class TalkService {
 
     public TalkResponseDto createMessage(Long roomId, TalkRequestDto talkRequestDto) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
-        Talk talk = talkMapper.toTalk(talkRequestDto, chatRoom);
+        Optional<Member> member= memberRepository.findById(talkRequestDto.getMemberId());
+        if(member.isEmpty()){
+            throw new CustomException(AUTHORIZATION_TALKROOM);
+        }
+        Talk talk = talkMapper.toTalk(talkRequestDto, chatRoom, member.get());
         talkRepository.save(talk);
         return talkMapper.toTalkResponseDto(talk);
     }

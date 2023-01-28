@@ -13,6 +13,7 @@ public class ChatRoomMapper {
                 .title(talkRoom.getPosting().getTitle())
                 .image(talkRoom.getPosting().getImage())
                 .currentMembers(talkRoom.getPosting().getCurrentMembers())
+                .totalMembers(talkRoom.getPosting().getTotalMembers())
                 .dueDate(talkRoom.getPosting().getDueDate())
                 .build();
     }

@@ -7,20 +7,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
+@Builder
 public class TalkResponseDto {
 
     private Long talkRoomId;
+    private Long memberId;
     private String sender;
     private String message;
 
     private LocalDateTime sendDate;
 
-    @Builder
-    public TalkResponseDto(Long talkRoomId, String sender, String message, LocalDateTime sendDate){
-        this.talkRoomId = talkRoomId;
-        this.sender = sender;
-        this.message = message;
-        this.sendDate = sendDate;
-    }
 }

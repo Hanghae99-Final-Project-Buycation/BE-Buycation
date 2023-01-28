@@ -12,5 +12,5 @@ public class ChatRoomResponseDto {
     private String image;
     private String dueDate;
     private int currentMembers;
-
+    private int totalMembers;
 }

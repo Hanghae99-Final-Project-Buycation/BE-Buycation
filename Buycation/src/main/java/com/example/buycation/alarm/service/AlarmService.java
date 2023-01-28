@@ -71,6 +71,7 @@ public class AlarmService {
         try {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception");
             emitterRepository.deleteById(emitterId);
         }
     }
@@ -89,6 +90,7 @@ public class AlarmService {
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
+                    System.out.println("send count alarm 때 key 값 ::: " + key);
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
                     sendAlarm(emitter, eventId, key, count);
                 }

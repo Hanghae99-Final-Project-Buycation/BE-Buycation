@@ -9,5 +9,6 @@ import java.util.List;
 @Builder
 public class TalkEntryResponseDto {
     private String nickname;
+    private Long memberId;
     private List<TalkResponseDto> talks;
 }
