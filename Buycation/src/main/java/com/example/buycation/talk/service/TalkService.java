@@ -86,7 +86,11 @@ public class TalkService {
 
 
     public TalkResponseDto createMessage(Long roomId, TalkRequestDto talkRequestDto) {
+        System.out.println("roodId" + roomId);
+
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
+        System.out.println("roodId2" + chatRoom.getId());
+
         Optional<Member> member= memberRepository.findById(talkRequestDto.getMemberId());
         if(member.isEmpty()){
             throw new CustomException(AUTHORIZATION_TALKROOM);
