@@ -80,8 +80,9 @@ public class WebSecurityConfig {
         config.addAllowedOrigin("http://www.buycation.shop.s3-website.ap-northeast-2.amazonaws.com");
         config.addAllowedOrigin("http://www.buycation.co.kr");
 
+        config.addAllowedOrigin("https://www.buycation.co.kr");
 
-        config.addAllowedOrigin("http://54.180.87.207:8080/");
+        config.addAllowedOrigin("https://buycation.co.kr");
 
         config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);
 
