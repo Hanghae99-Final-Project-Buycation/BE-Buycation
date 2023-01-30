@@ -33,6 +33,7 @@ public class AlarmService {
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
 
+
     public SseEmitter subscribe(UserDetailsImpl userDetails, String lastEventId) throws IOException{
         Member member = userDetails.getMember();
         Long memberId = member.getId();
@@ -55,6 +56,7 @@ public class AlarmService {
         return emitter;
     }
 
+    @Async
     public void sendLostAlarm(SseEmitter emitter, Long memberId, String lastEventId){
         Map<String, Object> eventCaches = emitterRepository.findAllEventCacheStartsWithId(String.valueOf(memberId));
         eventCaches.entrySet().stream()
@@ -86,6 +88,7 @@ public class AlarmService {
         sendCountAlarm(member);
     }
 
+    @Transactional
     public void sendCountAlarm(Member member) {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
