@@ -89,7 +89,7 @@ public class ProfileService {
                 if (reviewRepository.findByPostingIdAndReviewerIdAndMember(postingId, member.getId(), p.getMember()) != null) {
                     reviewCheck = true;
                 }
-                memberReviewResponseDtoList.add(reviewMapper.toResponse(p,reviewCheck));
+                memberReviewResponseDtoList.add(reviewMapper.toResponse(p, reviewCheck));
             }
         }
         return memberReviewResponseDtoList;
@@ -117,10 +117,12 @@ public class ProfileService {
             throw new CustomException(AUTHORIZATION_LOOKUP_FAIL);
         }
 
-        List<Participant> participant = participantRepository.findAllByMember(member);
+        List<Participant> participants = participantRepository.findAllByMember(member);
         List<MainPostingResponseDto> postingList = new ArrayList<>();
-        for (Participant p : participant) {
-            postingList.add(postingMapper.toResponse(p.getPosting()));
+        for (Participant p : participants) {
+            if (!p.getPosting().getMember().getId().equals(member.getId())) {
+                postingList.add(postingMapper.toResponse(p.getPosting()));
+            }
         }
         return postingList;
     }
