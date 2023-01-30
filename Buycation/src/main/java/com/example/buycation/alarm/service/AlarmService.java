@@ -12,6 +12,7 @@ import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class AlarmService {
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
+
 
     public SseEmitter subscribe(UserDetailsImpl userDetails, String lastEventId) throws IOException{
         Member member = userDetails.getMember();
@@ -54,6 +56,7 @@ public class AlarmService {
         return emitter;
     }
 
+    @Async
     public void sendLostAlarm(SseEmitter emitter, Long memberId, String lastEventId){
         Map<String, Object> eventCaches = emitterRepository.findAllEventCacheStartsWithId(String.valueOf(memberId));
         eventCaches.entrySet().stream()
@@ -67,10 +70,12 @@ public class AlarmService {
                 );
     }
 
+    @Async
     public void sendAlarm(SseEmitter sseEmitter,  String eventId, String emitterId, Object data){
         try {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception");
             emitterRepository.deleteById(emitterId);
         }
     }
@@ -80,16 +85,18 @@ public class AlarmService {
 
         Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
-        sendCountAlarm(member);
+        sendCountAlarm(member, false);
     }
 
-    public void sendCountAlarm(Member member) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
+                    count = isRead?count+=1:count;
                     sendAlarm(emitter, eventId, key, count);
                 }
         );
@@ -121,8 +128,7 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarm.read();
-        alarmRepository.flush();
-        sendCountAlarm(member);
+        sendCountAlarm(member ,true);
     }
 
     @Transactional
@@ -132,14 +138,14 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarmRepository.deleteById(alarmId);
-        sendCountAlarm(member);
+        sendCountAlarm(member, false);
     }
 
     @Transactional
     public void deleteAllAlarms(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
         alarmRepository.deleteAllByMember(member);
-        sendCountAlarm(member);
+        sendCountAlarm(member, false);
     }
 
     @Transactional
@@ -148,7 +154,4 @@ public class AlarmService {
         Long count = alarmRepository.countByIsReadFalseAndMember(member);
         return count;
     }
-
-
-
 }

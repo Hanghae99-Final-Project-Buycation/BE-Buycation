@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
+
 import static com.example.buycation.common.exception.ErrorCode.*;
 
 @RestControllerAdvice
@@ -38,6 +40,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     protected ResponseEntity<?> handleServerException(Exception ex) {
+        return new ResponseEntity<>(new ResponseMessage<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "error")
+                , HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({IOException.class})
+    protected ResponseEntity<?> handleServerException(IOException ex) {
+        ex.printStackTrace();
         return new ResponseEntity<>(new ResponseMessage<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "error")
                 , HttpStatus.INTERNAL_SERVER_ERROR);
     }
