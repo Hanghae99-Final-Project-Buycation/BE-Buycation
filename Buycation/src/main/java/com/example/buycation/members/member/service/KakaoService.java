@@ -107,8 +107,8 @@ public class KakaoService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
 
-        log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoMemberInfoDto(id, nickname, email);
+        log.info("카카오 사용자 정보: " + id + ", " + email + ", " + nickname);
+        return new KakaoMemberInfoDto(id, email, nickname);
     }
 
     // 3. 필요시에 회원가입
