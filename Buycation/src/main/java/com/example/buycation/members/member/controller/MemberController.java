@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -45,8 +46,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseMessage<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        memberService.login(loginRequestDto, response);
+    public ResponseMessage<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response, HttpServletRequest request) {
+        memberService.login(loginRequestDto, response, request);
         return new ResponseMessage<>(MEMBER_LOGIN_SUCCESS, null);
     }
 

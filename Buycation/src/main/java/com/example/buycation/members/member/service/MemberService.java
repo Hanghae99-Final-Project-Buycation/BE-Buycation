@@ -17,10 +17,12 @@ import com.example.buycation.members.profile.repository.ReviewRepository;
 import com.example.buycation.security.UserDetailsImpl;
 import com.example.buycation.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ import static com.example.buycation.common.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -64,25 +67,61 @@ public class MemberService {
             throw new CustomException(DUPLICATE_NICKNAME);
         }
 
-        //이메일 인증 확인
-        EmailCheck emailCheck = emailCheckRepository.findByEmail(member.getEmail());
-        //이메일 확인 객체가 없으면 실패
-        if (emailCheck == null) {
+        try {
+            //이메일 인증 확인
+            EmailCheck emailCheck = emailCheckRepository.findById(member.getEmail()).get();
+            //이메일 확인 객체가 false면 실패
+            if (!emailCheck.isStatus()) {
+                throw new CustomException(EMAIL_CERTIFICATION_FAIL);
+            }
+            emailCheckRepository.delete(emailCheck);
+        } catch (Exception e) {
+            //이메일 확인 객체가 없으면 실패
             throw new CustomException(EMAIL_CERTIFICATION_FAIL);
         }
-        //이메일 확인 객체가 false면 실패
-        if (!emailCheck.isStatus()) {
-            throw new CustomException(EMAIL_CERTIFICATION_FAIL);
-        }
-        emailCheckRepository.delete(emailCheck);
-
         memberRepository.save(member);
     }
 
     @Transactional
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response, HttpServletRequest request) {
         String inputEmail = loginRequestDto.getEmail();
         String inputPassword = loginRequestDto.getPassword();
+
+        //클라이언트의 ip 가져오기
+        String ip = request.getHeader("X-Forwarded-For");
+        log.info("현재 IP, X-Forwarded-For :" + ip);
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+            log.info("현재 IP, Proxy-Client-IP :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+            log.info("현재 IP, WL-Proxy-Client-IP :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+            log.info("현재 IP, HTTP_CLIENT_IP :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+            log.info("현재 IP, HTTP_X_FORWARDED_FOR :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+            log.info("현재 IP, X-Real-IP :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-RealIP");
+            log.info("현재 IP, X-RealIP :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("REMOTE_ADDR");
+            log.info("현재 IP, REMOTE_ADDR :" + ip);
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+            log.info("현재 IP :" + ip);
+        }
 
         Member member = memberRepository.findByEmail(inputEmail).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)

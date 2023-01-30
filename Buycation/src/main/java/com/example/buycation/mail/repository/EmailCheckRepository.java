@@ -1,8 +1,7 @@
 package com.example.buycation.mail.repository;
 
 import com.example.buycation.mail.entity.EmailCheck;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface EmailCheckRepository extends JpaRepository<EmailCheck, Long> {
-    EmailCheck findByEmail(String email);
+public interface EmailCheckRepository extends CrudRepository<EmailCheck, String> {
 }
