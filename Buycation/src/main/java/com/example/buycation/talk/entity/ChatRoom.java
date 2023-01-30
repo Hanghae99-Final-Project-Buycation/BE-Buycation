@@ -21,7 +21,7 @@ public class ChatRoom {
     @OneToOne
     private Posting posting;
 
-    @OneToMany(mappedBy = "talk", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY)
     private List<Talk> talks = new ArrayList<>();
 
     public ChatRoom(Posting posting){
