@@ -76,7 +76,7 @@ public class AlarmService {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception " + exception);
-            emitterRepository.deleteById(emitterId);
+            emitterRepository.deleteById(emitterId.split("_")[0]);
             Map<String, SseEmitter> emitters = emitterRepository.findAllStartWithById(emitterId.split("_")[0]);
             System.out.println("조회된 sse 알림 수 " + emitters.size());
             for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
