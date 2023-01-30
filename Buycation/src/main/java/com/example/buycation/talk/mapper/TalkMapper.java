@@ -8,6 +8,7 @@ import com.example.buycation.talk.entity.Talk;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class TalkMapper {
@@ -17,7 +18,7 @@ public class TalkMapper {
                 .sender(talk.getMember().getNickname())
                 .memberId(talk.getMember().getId())
                 .message(talk.getMessage())
-                .sendDate(talk.getCreatedAt())
+                .sendDate(talk.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
 

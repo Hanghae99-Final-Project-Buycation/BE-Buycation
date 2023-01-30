@@ -15,6 +15,6 @@ public class TalkResponseDto {
     private String sender;
     private String message;
 
-    private LocalDateTime sendDate;
+    private String sendDate;
 
 }
