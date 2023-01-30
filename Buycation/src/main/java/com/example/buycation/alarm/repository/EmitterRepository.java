@@ -14,6 +14,7 @@ public class EmitterRepository {
     private final Map<String, SseEmitter> sseEmitterMap = new ConcurrentHashMap<>();
     private final Map<String, Object> eventCache = new ConcurrentHashMap<>();
 
+
     public SseEmitter save(String memberId, SseEmitter sseEmitter){
         System.out.println("sseEmitter 생성 Id  ==========================================> " + memberId);
         sseEmitterMap.put(memberId, sseEmitter);
@@ -25,22 +26,23 @@ public class EmitterRepository {
         eventCache.put(eventCacheId, event);
     }
 
-    public void deleteById(String emitterId) {
-        sseEmitterMap.remove(emitterId);
+    public void deleteById(String memberId) {
+        Map<String, SseEmitter> emitters = findAllStartWithById(memberId);
+        for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
+            sseEmitterMap.remove(emitter.getKey());
+        }
     }
 
-    public Map<String, SseEmitter> findAllStartWithById(String emitterId){
+    public Map<String, SseEmitter> findAllStartWithById(String memberId){
         return sseEmitterMap.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(emitterId))
+                .filter(entry -> entry.getKey().split("_")[0].equals(memberId))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 
     public Map<String, Object> findAllEventCacheStartsWithId(String memberId) {
         return eventCache.entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(memberId))
+                .filter(entry -> entry.getKey().split("_")[0].equals(memberId))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
-
-
 }
