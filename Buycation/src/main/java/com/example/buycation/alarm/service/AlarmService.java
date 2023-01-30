@@ -85,18 +85,18 @@ public class AlarmService {
 
         Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
-        sendCountAlarm(member);
+        sendCountAlarm(member, false);
     }
 
-    @Transactional
-    public void sendCountAlarm(Member member) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
         sseEmitters.forEach(
                 (key, emitter) -> {
-                    System.out.println("send count alarm 때 key 값 ::: " + key);
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
+                    count = isRead?count+=1:count;
                     sendAlarm(emitter, eventId, key, count);
                 }
         );
@@ -128,8 +128,7 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarm.read();
-        alarmRepository.flush();
-        sendCountAlarm(member);
+        sendCountAlarm(member ,true);
     }
 
     @Transactional
@@ -139,14 +138,14 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarmRepository.deleteById(alarmId);
-        sendCountAlarm(member);
+        sendCountAlarm(member, false);
     }
 
     @Transactional
     public void deleteAllAlarms(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
         alarmRepository.deleteAllByMember(member);
-        sendCountAlarm(member);
+        sendCountAlarm(member, false);
     }
 
     @Transactional
@@ -155,7 +154,4 @@ public class AlarmService {
         Long count = alarmRepository.countByIsReadFalseAndMember(member);
         return count;
     }
-
-
-
 }
