@@ -85,6 +85,7 @@ public class TalkService {
     }
 
 
+    @Transactional
     public TalkResponseDto createMessage(Long roomId, TalkRequestDto talkRequestDto) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
