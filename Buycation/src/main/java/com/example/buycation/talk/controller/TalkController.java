@@ -22,6 +22,7 @@ public class TalkController {
         TalkResponseDto newTalk = talkService.createMessage(roomId, talkRequestDto);
         return TalkResponseDto.builder()
                 .talkRoomId(roomId)
+                .memberId(newTalk.getMemberId())
                 .sender(newTalk.getSender())
                 .message(newTalk.getMessage())
                 .build();
