@@ -75,14 +75,13 @@ public class AlarmService {
         try {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception");
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception " + exception);
             emitterRepository.deleteById(emitterId);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
-
         Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
         sendCountAlarm(member, false);
@@ -93,6 +92,12 @@ public class AlarmService {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
+
+        System.out.println("조회된 이미터 ==>> " + sseEmitters.size());
+        for (Map.Entry<String, SseEmitter> entry : sseEmitters.entrySet()) {
+            System.out.println(entry.getKey() + "\n");
+        }
+
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
