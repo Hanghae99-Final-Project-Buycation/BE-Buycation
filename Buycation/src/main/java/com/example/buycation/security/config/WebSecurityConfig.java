@@ -40,8 +40,6 @@ public class WebSecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-//                .requestMatchers(PathRequest.toH2Console())
-                .antMatchers("/ws/**", "/send/**", "/talk/**")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
@@ -53,6 +51,7 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.POST, new String[]{"/api/members/signup", "/api/members/login"}).permitAll()
                 .antMatchers(HttpMethod.GET, new String[]{"/api/posting/**", "/api/members/signup/**","/api/members/{memberId}/profile","/api/members/login/kakao"}).permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/members/signup/emailcheck").permitAll()
+                .antMatchers("/ws/**", "/send/**", "/talk/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling()
