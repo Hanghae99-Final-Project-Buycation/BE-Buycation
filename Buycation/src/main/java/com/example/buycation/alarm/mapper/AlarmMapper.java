@@ -33,7 +33,7 @@ public class AlarmMapper {
 
     }
 
-    private String timeGapFromNow(LocalDateTime time){
+    public String timeGapFromNow(LocalDateTime time){
         Duration duration = Duration.between(time, LocalDateTime.now());
         long sec = duration.getSeconds();
         String timeGap = "";
