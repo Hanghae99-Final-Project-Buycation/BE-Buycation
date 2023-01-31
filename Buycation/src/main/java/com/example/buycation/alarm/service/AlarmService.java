@@ -38,7 +38,7 @@ public class AlarmService {
         Member member = userDetails.getMember();
         Long memberId = member.getId();
         String emitterId = memberId + "_" + System.currentTimeMillis();
-        emitterRepository.deleteById(emitterId);
+        emitterRepository.deleteById(String.valueOf(memberId));
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         try {
             emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
@@ -84,7 +84,7 @@ public class AlarmService {
             Map<String, SseEmitter> emitters = emitterRepository.findAllStartWithById(emitterId.split("_")[0]);
             System.out.println("조회된 sse 알림 수 " + emitters.size());
             for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
-                System.out.println(emitter.getKey() + "\n");
+                System.out.println(emitter.getKey());
             }
 
         }
