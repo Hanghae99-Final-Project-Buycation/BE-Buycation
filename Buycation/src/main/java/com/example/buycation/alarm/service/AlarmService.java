@@ -28,7 +28,7 @@ import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
-    private static final Long DEFAULT_TIMEOUT =30 * 60 * 1000L;
+    private static final Long DEFAULT_TIMEOUT =15 * 60 * 1000L;
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
@@ -106,7 +106,7 @@ public class AlarmService {
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
-                    count = isRead?count+=1:count;
+                    count = isRead?count+1:count;
                     sendAlarm(emitter, eventId, key, count);
                 }
         );
