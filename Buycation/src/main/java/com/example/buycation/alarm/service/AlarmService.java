@@ -56,7 +56,7 @@ public class AlarmService {
         return emitter;
     }
 
-    @Async
+
     public void sendLostAlarm(SseEmitter emitter, Long memberId, String lastEventId){
         Map<String, Object> eventCaches = emitterRepository.findAllEventCacheStartsWithId(String.valueOf(memberId));
         eventCaches.entrySet().stream()
@@ -90,6 +90,7 @@ public class AlarmService {
     }
 
     public void createAlarm2(Member member, AlarmType alarmType, Long postingId, String title){
+        System.out.println("createAlarm2");
         createAlarm(member, alarmType, postingId, title);
         sendCountAlarm(member, false);
     }
