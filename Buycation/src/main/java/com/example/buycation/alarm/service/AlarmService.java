@@ -79,7 +79,7 @@ public class AlarmService {
 
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception " + exception);
 
-            emitterRepository.deleteById(emitterId.split("_")[0]);
+            emitterRepository.deleteById(emitterId);
 
             Map<String, SseEmitter> emitters = emitterRepository.findAllStartWithById(emitterId.split("_")[0]);
             System.out.println("조회된 sse 알림 수 " + emitters.size());
