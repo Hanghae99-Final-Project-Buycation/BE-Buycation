@@ -75,13 +75,17 @@ public class AlarmService {
         try {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
+
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception " + exception);
+
             emitterRepository.deleteById(emitterId.split("_")[0]);
+
             Map<String, SseEmitter> emitters = emitterRepository.findAllStartWithById(emitterId.split("_")[0]);
             System.out.println("조회된 sse 알림 수 " + emitters.size());
             for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
                 System.out.println(emitter.getKey() + "\n");
             }
+
         }
     }
 
@@ -98,12 +102,16 @@ public class AlarmService {
 
     public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
+
+        System.out.println("알림 받을 사람 : " + id);
+
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
 
         System.out.println("조회된 이미터 ==>> " + sseEmitters.size());
+
         for (Map.Entry<String, SseEmitter> entry : sseEmitters.entrySet()) {
-            System.out.println(entry.getKey() + "\n");
+            System.out.println(entry.getKey());
         }
 
         sseEmitters.forEach(

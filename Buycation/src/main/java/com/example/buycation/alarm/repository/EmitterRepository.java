@@ -27,8 +27,10 @@ public class EmitterRepository {
     }
 
     public void deleteById(String memberId) {
+
         Map<String, SseEmitter> emitters = findAllStartWithById(memberId);
         for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
+            System.out.println("delete emitters id => " + emitter.getKey());
             sseEmitterMap.remove(emitter.getKey());
         }
     }
