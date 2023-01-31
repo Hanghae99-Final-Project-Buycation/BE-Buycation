@@ -1,5 +1,7 @@
 package com.example.buycation.posting.service;
 
+import com.example.buycation.alarm.entity.AlarmType;
+import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.dto.CommentResponseDto;
 import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.mapper.CommentMapper;
@@ -19,7 +21,10 @@ import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.mapper.PostingMapper;
 import com.example.buycation.posting.repository.PostingRepository;
 import com.example.buycation.security.UserDetailsImpl;
+import com.example.buycation.talk.entity.ChatRoom;
+import com.example.buycation.talk.entity.Talk;
 import com.example.buycation.talk.repository.ChatRoomRepository;
+import com.example.buycation.talk.repository.TalkRepository;
 import com.example.buycation.talk.service.TalkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,11 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_DELETE_FAIL;
-import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_UPDATE_FAIL;
-import static com.example.buycation.common.exception.ErrorCode.NOT_FINISH_PARTICIPATION;
-import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
-import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
+import static com.example.buycation.common.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,8 +47,9 @@ public class PostingService {
     private final ApplicationMapper applicationMapper;
     private final ParticipantRepository participantRepository;
     private final ApplicationRepository applicationRepository;
-
     private final ChatRoomRepository chatRoomRepository;
+    private final TalkRepository talkRepository;
+    private final AlarmService alarmService;
 
     @Transactional
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
@@ -106,6 +108,9 @@ public class PostingService {
         }
 
         posting.finish(true);
+        posting.getParticipantList().stream().forEach(participant -> {
+            alarmService.createAlarm(participant.getMember(), AlarmType.DONE, posting.getId(), posting.getTitle());
+        });
     }
 
     @Transactional
@@ -134,6 +139,10 @@ public class PostingService {
                 postingRequestDto.getCoordsX(),
                 postingRequestDto.getCoordsY()
         );
+
+        posting.getParticipantList().stream().forEach(participant -> {
+            alarmService.createAlarm(participant.getMember(), AlarmType.UPDATE, posting.getId(), posting.getTitle());
+        });
     }
 
     @Transactional
@@ -158,9 +167,18 @@ public class PostingService {
         List<Participant> participants = participantRepository.findAllByPosting(posting);
         if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
 
+        ChatRoom chatRoom = chatRoomRepository.findByPosting(posting).orElseThrow(
+                () -> new CustomException(TALKROOM_NOT_FOUND)
+        );
+
+        talkRepository.deleteAllByChatRoom(chatRoom);
         chatRoomRepository.deleteByPosting(posting);
 
         postingRepository.deleteById(postingId);
+
+        posting.getParticipantList().stream().forEach(participant -> {
+            alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
+        });
     }
 
     @Transactional(readOnly = true)

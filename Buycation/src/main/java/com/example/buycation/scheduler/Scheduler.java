@@ -39,7 +39,7 @@ public class Scheduler {
     private final AlarmService alarmService;
 
     // 초, 분, 시, 일, 월, 주 업데이트 순서
-    //@Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     @Transactional
     public void updatePostings() throws InterruptedException {
         System.out.println("게시글 업데이트 시작");
@@ -54,6 +54,11 @@ public class Scheduler {
             //멤버가 다모인 상태일 경우 완료
             if (p.getTotalMembers() == p.getCurrentMembers()) {
                 p.finish(true);
+                for (Posting posting:postingList) {
+                    posting.getParticipantList().stream().forEach(participant -> {
+                        alarmService.createAlarm(participant.getMember(), AlarmType.DONE, posting.getId(), posting.getTitle());
+                    });
+                }
             //멤버가 안모였으면 삭제
             } else {
                 //게시글 삭제목록 저장(쿼리 한번으로 삭제 시키기위함)
@@ -66,15 +71,23 @@ public class Scheduler {
                 if (!applications.isEmpty()) applicationRepository.deleteAllByInQuery(applications);
                 List<Participant> participants = participantRepository.findAllByPosting(p);
                 if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
+                for (Posting posting:postingList) {
+                    posting.getParticipantList().stream().forEach(participant -> {
+                        alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
+                    });
+                }
             }
         }
+
         //한번에 삭제
         if (!postingDeleteList.isEmpty()) postingRepository.deleteAllByIdInQuery(postingDeleteList);
+
+
 
         System.out.println("게시글 업데이트 종료");
     }
 
-    //@Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 * * * * *")
     @Transactional(readOnly = true)
     public void alarm60minutesBefore() {
         List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute( LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
@@ -85,7 +98,7 @@ public class Scheduler {
         }
     }
 
-    //@Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void deleteOldAlarmAfterAMonth() {
         alarmRepository.deleteAlarmByDueDateBeforeAMonth( LocalDateTime.now().minusMonths(1));

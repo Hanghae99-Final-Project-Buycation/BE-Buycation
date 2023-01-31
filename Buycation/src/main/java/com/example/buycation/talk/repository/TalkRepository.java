@@ -11,4 +11,5 @@ import java.util.List;
 public interface TalkRepository extends JpaRepository<Talk, Long> {
 
     List<Talk> findAllByChatRoom(ChatRoom chatRoom);
+    void deleteAllByChatRoom(ChatRoom chatRoom);
 }
