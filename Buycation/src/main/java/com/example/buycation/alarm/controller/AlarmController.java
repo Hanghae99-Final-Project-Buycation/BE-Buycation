@@ -6,6 +6,7 @@ import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.common.PageConfig.PageRequest;
 import com.example.buycation.common.PageConfig.PageResponse;
 import com.example.buycation.common.ResponseMessage;
+import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 
 import static com.example.buycation.common.MessageCode.*;
+import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
 
 
 @RequiredArgsConstructor
@@ -30,8 +32,11 @@ public class AlarmController {
                                 @RequestParam(required = false, defaultValue = "")String lastEventId) throws IOException{
 
         System.out.println("lastEventId >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SSE 연결 " + lastEventId);
-        return alarmService.subscribe(userDetails, lastEventId);
-
+        try {
+            return alarmService.subscribe(userDetails, lastEventId);
+        }catch (Exception e){
+            throw new CustomException(SUBSCRIBE_FAIL);
+        }
     }
 
 

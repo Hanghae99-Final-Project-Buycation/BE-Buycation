@@ -61,7 +61,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR("서버 에러입니다. 서버 팀에 연락주세요!", 500),
 
     //알림 관련 에러
-    SUBSCRIBE_FAIL("알림 구독에 실해하였습니다.", 500);
+    SUBSCRIBE_FAIL("알림 구독에 실패하였습니다.", 500);
 
     private final String msg;
     private final int statusCode;
