@@ -95,12 +95,13 @@ public class AlarmService {
     }
 
 
-    @Async
+    @Transactional
     public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
         Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
     }
 
+    @Async
     public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
 
