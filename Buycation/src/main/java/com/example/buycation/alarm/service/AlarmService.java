@@ -71,7 +71,6 @@ public class AlarmService {
                 );
     }
 
-    @Async
     public void sendAlarm(SseEmitter sseEmitter,  String eventId, String emitterId, Object data){
         try {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
@@ -91,12 +90,12 @@ public class AlarmService {
     }
 
     public void createAlarm2(Member member, AlarmType alarmType, Long postingId, String title){
-        System.out.println("createAlarm2");
         createAlarm(member, alarmType, postingId, title);
         sendCountAlarm(member, false);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+
+    @Async
     public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
         Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
         alarmRepository.save(alarm);
