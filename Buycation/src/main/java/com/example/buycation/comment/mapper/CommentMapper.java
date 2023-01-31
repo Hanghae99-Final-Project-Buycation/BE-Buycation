@@ -12,13 +12,14 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class CommentMapper {
 
-    public CommentResponseDto toResponse(Comment comment){
+    public CommentResponseDto toResponse(Comment comment, boolean status){
         return CommentResponseDto.builder()
                 .commentId(comment.getId())
                 .memberId(comment.getMember().getId())
                 .nickname(comment.getMember().getNickname())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .status(status)
                 .build();
     }
     public Comment toComment(CommentRequestDto commentRequestDto, Member member, Posting posting){

@@ -81,7 +81,13 @@ public class PostingService {
         List<Comment> comments = commentRepository.findAllByPostingOrderByCreatedAtDesc(posting);
         List<CommentResponseDto> commentList = new ArrayList<>();
         for (Comment c : comments) {
-            commentList.add(commentMapper.toResponse(c));
+            boolean status = false;
+            if (userDetails != null) {
+                if (c.getMember().getId().equals(userDetails.getMember().getId())) {
+                    status = true;
+                }
+            }
+            commentList.add(commentMapper.toResponse(c, status));
         }
         return postingMapper.toResponse(posting, commentList, myPosting, participant);
     }
