@@ -28,7 +28,7 @@ import static com.example.buycation.common.exception.ErrorCode.SUBSCRIBE_FAIL;
 @Service
 @RequiredArgsConstructor
 public class AlarmService {
-    private static final Long DEFAULT_TIMEOUT =30 * 60 * 1000L;
+    private static final Long DEFAULT_TIMEOUT =15 * 60 * 1000L;
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmMapper alarmMapper;
@@ -38,6 +38,7 @@ public class AlarmService {
         Member member = userDetails.getMember();
         Long memberId = member.getId();
         String emitterId = memberId + "_" + System.currentTimeMillis();
+        emitterRepository.deleteById(String.valueOf(memberId));
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         try {
             emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
@@ -56,7 +57,7 @@ public class AlarmService {
         return emitter;
     }
 
-    @Async
+
     public void sendLostAlarm(SseEmitter emitter, Long memberId, String lastEventId){
         Map<String, Object> eventCaches = emitterRepository.findAllEventCacheStartsWithId(String.valueOf(memberId));
         eventCaches.entrySet().stream()
@@ -75,28 +76,50 @@ public class AlarmService {
         try {
             sseEmitter.send(SseEmitter.event().id(eventId).data(data));
         }catch(IOException | IllegalStateException exception){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception");
+
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception " + exception);
+
             emitterRepository.deleteById(emitterId);
+
+            Map<String, SseEmitter> emitters = emitterRepository.findAllStartWithById(emitterId.split("_")[0]);
+            System.out.println("조회된 sse 알림 수 " + emitters.size());
+            for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
+                System.out.println(emitter.getKey());
+            }
+
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
-
-        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
-        alarmRepository.save(alarm);
+    public void createAlarm2(Member member, AlarmType alarmType, Long postingId, String title){
+        System.out.println("createAlarm2");
+        createAlarm(member, alarmType, postingId, title);
         sendCountAlarm(member, false);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
+        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
+        alarmRepository.save(alarm);
+    }
+
     public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
+
+        System.out.println("알림 받을 사람 : " + id);
+
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
+
+        System.out.println("조회된 이미터 ==>> " + sseEmitters.size());
+
+        for (Map.Entry<String, SseEmitter> entry : sseEmitters.entrySet()) {
+            System.out.println(entry.getKey());
+        }
+
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
-                    count = isRead?count+=1:count;
+                    count = isRead?count+1:count;
                     sendAlarm(emitter, eventId, key, count);
                 }
         );
