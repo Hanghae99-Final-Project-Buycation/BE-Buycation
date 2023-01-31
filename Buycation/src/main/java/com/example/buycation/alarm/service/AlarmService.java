@@ -38,6 +38,7 @@ public class AlarmService {
         Member member = userDetails.getMember();
         Long memberId = member.getId();
         String emitterId = memberId + "_" + System.currentTimeMillis();
+        emitterRepository.deleteById(emitterId);
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         try {
             emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
