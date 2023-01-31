@@ -46,7 +46,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({IOException.class})
     protected ResponseEntity<?> handleServerException(IOException ex) {
-        ex.printStackTrace();
         return new ResponseEntity<>(new ResponseMessage<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), "error")
                 , HttpStatus.INTERNAL_SERVER_ERROR);
     }

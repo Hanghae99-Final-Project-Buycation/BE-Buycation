@@ -14,6 +14,9 @@ import com.example.buycation.participant.repository.ApplicationRepository;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
+import com.example.buycation.talk.entity.ChatRoom;
+import com.example.buycation.talk.repository.ChatRoomRepository;
+import com.example.buycation.talk.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,8 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
-import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
+import static com.example.buycation.common.exception.ErrorCode.*;
 
 @Component
 @RequiredArgsConstructor
@@ -37,9 +39,11 @@ public class Scheduler {
     private final ParticipantRepository participantRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmService alarmService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final TalkRepository talkRepository;
 
     // 초, 분, 시, 일, 월, 주 업데이트 순서
-    //@Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     @Transactional
     public void updatePostings() throws InterruptedException {
         System.out.println("게시글 업데이트 시작");
@@ -54,6 +58,11 @@ public class Scheduler {
             //멤버가 다모인 상태일 경우 완료
             if (p.getTotalMembers() == p.getCurrentMembers()) {
                 p.finish(true);
+                for (Posting posting:postingList) {
+                    posting.getParticipantList().stream().forEach(participant -> {
+                        alarmService.createAlarm(participant.getMember(), AlarmType.DONE, posting.getId(), posting.getTitle());
+                    });
+                }
             //멤버가 안모였으면 삭제
             } else {
                 //게시글 삭제목록 저장(쿼리 한번으로 삭제 시키기위함)
@@ -66,15 +75,32 @@ public class Scheduler {
                 if (!applications.isEmpty()) applicationRepository.deleteAllByInQuery(applications);
                 List<Participant> participants = participantRepository.findAllByPosting(p);
                 if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
+
+
+                ChatRoom chatRoom = chatRoomRepository.findByPosting(p).orElseThrow(
+                        () -> new CustomException(TALKROOM_NOT_FOUND)
+                );
+                talkRepository.deleteAllByChatRoom(chatRoom);
+                chatRoomRepository.deleteByPosting(p);
+
+                postingRepository.deleteById(p.getId());
+
+                p.getParticipantList().stream().forEach(participant -> {
+                    alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, p.getId(), p.getTitle());
+                });
+
             }
         }
+
         //한번에 삭제
         if (!postingDeleteList.isEmpty()) postingRepository.deleteAllByIdInQuery(postingDeleteList);
+
+
 
         System.out.println("게시글 업데이트 종료");
     }
 
-    //@Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 * * * * *")
     @Transactional(readOnly = true)
     public void alarm60minutesBefore() {
         List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute( LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
@@ -85,7 +111,7 @@ public class Scheduler {
         }
     }
 
-    //@Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void deleteOldAlarmAfterAMonth() {
         alarmRepository.deleteAlarmByDueDateBeforeAMonth( LocalDateTime.now().minusMonths(1));
