@@ -85,14 +85,17 @@ public class AlarmService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
-        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
-        alarmRepository.save(alarm);
+    public void createAlarm2(Member member, AlarmType alarmType, Long postingId, String title){
+        createAlarm(member, alarmType, postingId, title);
         sendCountAlarm(member, false);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
+        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
+        alarmRepository.save(alarm);
+    }
+
     public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
         String eventId = id + "_" + System.currentTimeMillis();
