@@ -98,6 +98,10 @@ public class PostingService {
     public void finishPosting(Member member, Long postingId) {
         Posting posting = postingRepository.findById(postingId).orElseThrow(() -> new CustomException(POSTING_NOT_FOUND));
 
+        //완료된 게시글 완료 금지
+        if (posting.isDoneStatus()) {
+            throw new CustomException(POSTING_RECRUITMENT_SUCCESS_ERROR);
+        }
         //인원수 채워졌는지 확인
         if (posting.getTotalMembers() != posting.getCurrentMembers()) {
             throw new CustomException(NOT_FINISH_PARTICIPATION);
@@ -158,6 +162,10 @@ public class PostingService {
             throw new CustomException(AUTHORIZATION_DELETE_FAIL);
         }
 
+        posting.getParticipantList().stream().forEach(participant -> {
+            alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
+        });
+
         List<Comment> comments = commentRepository.findAllByPosting(posting);
         if (!comments.isEmpty()) commentRepository.deleteAllByInQuery(comments);
 
@@ -167,18 +175,14 @@ public class PostingService {
         List<Participant> participants = participantRepository.findAllByPosting(posting);
         if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
 
-        ChatRoom chatRoom = chatRoomRepository.findByPosting(posting).orElseThrow(
-                () -> new CustomException(TALKROOM_NOT_FOUND)
-        );
+        ChatRoom chatRoom = chatRoomRepository.findByPosting(posting).orElseThrow(() -> new CustomException(TALKROOM_NOT_FOUND));
 
-        talkRepository.deleteAllByChatRoom(chatRoom);
-        chatRoomRepository.deleteByPosting(posting);
+        List<Talk> talks = talkRepository.findAllByChatRoom(chatRoom);
+        if (!talks.isEmpty()) talkRepository.deleteAllByInQuery(talks);
+
+        chatRoomRepository.delete(chatRoom);
 
         postingRepository.deleteById(postingId);
-
-        posting.getParticipantList().stream().forEach(participant -> {
-            alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
-        });
     }
 
     @Transactional(readOnly = true)
