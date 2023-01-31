@@ -75,23 +75,20 @@ public class Scheduler {
                 if (!applications.isEmpty()) applicationRepository.deleteAllByInQuery(applications);
                 List<Participant> participants = participantRepository.findAllByPosting(p);
                 if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
-                for (Posting posting:postingList) {
-                    ChatRoom chatRoom = chatRoomRepository.findByPosting(posting).orElseThrow(
-                            () -> new CustomException(TALKROOM_NOT_FOUND)
-                    );
-                    talkRepository.deleteAllByChatRoom(chatRoom);
-                    chatRoomRepository.deleteByPosting(posting);
 
-                    postingRepository.deleteById(p.getId());
 
-                    posting.getParticipantList().stream().forEach(participant -> {
-                        alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
-                    });
+                ChatRoom chatRoom = chatRoomRepository.findByPosting(p).orElseThrow(
+                        () -> new CustomException(TALKROOM_NOT_FOUND)
+                );
+                talkRepository.deleteAllByChatRoom(chatRoom);
+                chatRoomRepository.deleteByPosting(p);
 
-                    posting.getParticipantList().stream().forEach(participant -> {
-                        alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
-                    });
-                }
+                postingRepository.deleteById(p.getId());
+
+                p.getParticipantList().stream().forEach(participant -> {
+                    alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, p.getId(), p.getTitle());
+                });
+
             }
         }
 
