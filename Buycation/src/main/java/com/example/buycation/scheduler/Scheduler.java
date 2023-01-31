@@ -14,6 +14,9 @@ import com.example.buycation.participant.repository.ApplicationRepository;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
+import com.example.buycation.talk.entity.ChatRoom;
+import com.example.buycation.talk.repository.ChatRoomRepository;
+import com.example.buycation.talk.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,8 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.buycation.common.exception.ErrorCode.POSTING_NOT_FOUND;
-import static com.example.buycation.common.exception.ErrorCode.POSTING_RECRUITMENT_SUCCESS_ERROR;
+import static com.example.buycation.common.exception.ErrorCode.*;
 
 @Component
 @RequiredArgsConstructor
@@ -37,6 +39,8 @@ public class Scheduler {
     private final ParticipantRepository participantRepository;
     private final AlarmRepository alarmRepository;
     private final AlarmService alarmService;
+    private final ChatRoomRepository chatRoomRepository;
+    private final TalkRepository talkRepository;
 
     // 초, 분, 시, 일, 월, 주 업데이트 순서
     @Scheduled(cron = "0 0/10 * * * *")
@@ -72,6 +76,18 @@ public class Scheduler {
                 List<Participant> participants = participantRepository.findAllByPosting(p);
                 if (!participants.isEmpty()) participantRepository.deleteAllByInQuery(participants);
                 for (Posting posting:postingList) {
+                    ChatRoom chatRoom = chatRoomRepository.findByPosting(posting).orElseThrow(
+                            () -> new CustomException(TALKROOM_NOT_FOUND)
+                    );
+                    talkRepository.deleteAllByChatRoom(chatRoom);
+                    chatRoomRepository.deleteByPosting(posting);
+
+                    postingRepository.deleteById(p.getId());
+
+                    posting.getParticipantList().stream().forEach(participant -> {
+                        alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
+                    });
+
                     posting.getParticipantList().stream().forEach(participant -> {
                         alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
                     });
