@@ -14,7 +14,6 @@ public class TalkResponseDto {
     private Long memberId;
     private String sender;
     private String message;
-
     private String sendDate;
 
 }
