@@ -70,6 +70,7 @@ public class Scheduler {
                                 .postingId(p.getId())
                                 .alarmType(AlarmType.DONE)
                                 .member(participant.getMember())
+                                .message(AlarmType.DONE.getMessage())
                                 .title(p.getTitle()).build());
 
                     } catch(Exception e){
@@ -87,6 +88,7 @@ public class Scheduler {
                                 .postingId(p.getId())
                                 .alarmType(AlarmType.FAIL)
                                 .member(participant.getMember())
+                                .message(AlarmType.FAIL.getMessage())
                                 .title(p.getTitle()).build());
 
                     } catch(Exception e){
@@ -159,14 +161,13 @@ public class Scheduler {
                             .postingId(posting.getId())
                             .alarmType(AlarmType.REMIND)
                             .member(participant.getMember())
+                            .message(AlarmType.REMIND.getMessage())
                             .title(posting.getTitle()).build());
 
                 } catch(Exception e){
                     System.out.println(ErrorCode.ALARM_NOT_FOUND);
                 }
             });
-
-
         }
 
         System.out.println("마감 60분 전 게시글 알림 종료");

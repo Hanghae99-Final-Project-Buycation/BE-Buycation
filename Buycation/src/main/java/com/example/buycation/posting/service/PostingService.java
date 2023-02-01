@@ -121,6 +121,7 @@ public class PostingService {
                         .postingId(postingId)
                         .alarmType(AlarmType.DONE)
                         .member(member)
+                        .message(AlarmType.DONE.getMessage())
                         .title(posting.getTitle()).build());
 
             } catch(Exception e){
@@ -162,6 +163,7 @@ public class PostingService {
                         .postingId(postingId)
                         .alarmType(AlarmType.UPDATE)
                         .member(member)
+                        .message(AlarmType.UPDATE.getMessage())
                         .title(posting.getTitle()).build());
 
             } catch(Exception e){
@@ -190,6 +192,7 @@ public class PostingService {
                         .postingId(postingId)
                         .alarmType(AlarmType.DELETE)
                         .member(member)
+                        .message(AlarmType.DELETE.getMessage())
                         .title(posting.getTitle()).build());
 
             } catch(Exception e){
