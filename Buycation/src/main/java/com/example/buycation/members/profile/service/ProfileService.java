@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_LOOKUP_FAIL;
@@ -102,11 +103,17 @@ public class ProfileService {
             throw new CustomException(AUTHORIZATION_LOOKUP_FAIL);
         }
 
-        List<Posting> postings = postingRepository.findAllByMember(member);
-        List<MainPostingResponseDto> postingList = new ArrayList<>();
+        List<Posting> postings = postingRepository.findAllByMemberOrderByCreatedAtDesc(member);
+        List<MainPostingResponseDto> postingNotDoneList = new ArrayList<>();
+        List<MainPostingResponseDto> postingDoneList = new ArrayList<>();
         for (Posting p : postings) {
-            postingList.add(postingMapper.toResponse(p));
+            if (!p.isDoneStatus()) {
+                postingNotDoneList.add(postingMapper.toResponse(p));
+            } else
+                postingDoneList.add(postingMapper.toResponse(p));
         }
+        List<MainPostingResponseDto> postingList = new ArrayList<>(postingNotDoneList);
+        postingList.addAll(postingDoneList);
         return postingList;
     }
 
@@ -118,12 +125,19 @@ public class ProfileService {
         }
 
         List<Participant> participants = participantRepository.findAllByMember(member);
-        List<MainPostingResponseDto> postingList = new ArrayList<>();
+        Collections.reverse(participants);
+        List<MainPostingResponseDto> postingNotDoneList = new ArrayList<>();
+        List<MainPostingResponseDto> postingDoneList = new ArrayList<>();
         for (Participant p : participants) {
             if (!p.getPosting().getMember().getId().equals(member.getId())) {
-                postingList.add(postingMapper.toResponse(p.getPosting()));
+                if (!p.getPosting().isDoneStatus()) {
+                    postingNotDoneList.add(postingMapper.toResponse(p.getPosting()));
+                } else
+                    postingDoneList.add(postingMapper.toResponse(p.getPosting()));
             }
         }
+        List<MainPostingResponseDto> postingList = new ArrayList<>(postingNotDoneList);
+        postingList.addAll(postingDoneList);
         return postingList;
     }
 }

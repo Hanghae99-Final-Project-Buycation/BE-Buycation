@@ -151,7 +151,7 @@ public class Scheduler {
     public void alarm60minutesBefore() {
         System.out.println("마감 60분 전 게시글 알림 시작");
 
-        List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        List<Posting> postingList = postingRepository.findUpdateData(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), false);
         for (Posting posting : postingList) {
             posting.getParticipantList().stream().forEach(participant -> {
                 try {
