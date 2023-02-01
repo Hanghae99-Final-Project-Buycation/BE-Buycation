@@ -147,21 +147,26 @@ public class Scheduler {
     }
 
     @Scheduled(cron = "0 0/5 * * * *")
-    @Transactional(readOnly = true)
+    @Transactional
     public void alarm60minutesBefore() {
         System.out.println("마감 60분 전 게시글 알림 시작");
 
         List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         for (Posting posting : postingList) {
             posting.getParticipantList().stream().forEach(participant -> {
-                //alarmService.createAlarm(participant.getMember(), AlarmType.REMIND, posting.getId(), posting.getTitle());
+                try {
+                    applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                            .postingId(posting.getId())
+                            .alarmType(AlarmType.REMIND)
+                            .member(participant.getMember())
+                            .title(posting.getTitle()).build());
 
-                applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
-                        .postingId(posting.getId())
-                        .alarmType(AlarmType.REMIND)
-                        .member(participant.getMember())
-                        .title(posting.getTitle()).build());
+                } catch(Exception e){
+                    System.out.println(ErrorCode.ALARM_NOT_FOUND);
+                }
             });
+
+
         }
 
         System.out.println("마감 60분 전 게시글 알림 종료");
