@@ -142,7 +142,7 @@ public class ParticipantService {
             applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                     .postingId(posting.getId())
                     .alarmType(AlarmType.ACCEPT)
-                    .member(posting.getMember())
+                    .member(application.getMember())
                     .message(AlarmType.ACCEPT.getMessage())
                     .title(posting.getTitle()).build());
         } catch(Exception e){
@@ -174,7 +174,7 @@ public class ParticipantService {
             applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                     .postingId(posting.getId())
                     .alarmType(AlarmType.REJECT)
-                    .member(posting.getMember())
+                    .member(application.getMember())
                     .message(AlarmType.REJECT.getMessage())
                     .title(posting.getTitle()).build());
         } catch(Exception e){
