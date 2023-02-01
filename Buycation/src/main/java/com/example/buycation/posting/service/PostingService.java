@@ -1,5 +1,6 @@
 package com.example.buycation.posting.service;
 
+import com.example.buycation.alarm.dto.RealtimeAlarmDto;
 import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.dto.CommentResponseDto;
@@ -7,6 +8,7 @@ import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.mapper.CommentMapper;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.common.exception.ErrorCode;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.participant.entity.Application;
 import com.example.buycation.participant.entity.Participant;
@@ -27,6 +29,7 @@ import com.example.buycation.talk.repository.ChatRoomRepository;
 import com.example.buycation.talk.repository.TalkRepository;
 import com.example.buycation.talk.service.TalkService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +52,7 @@ public class PostingService {
     private final ApplicationRepository applicationRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final TalkRepository talkRepository;
-    private final AlarmService alarmService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public void createPosting(PostingRequestDto postingRequestDto, Member member) {
@@ -113,7 +116,16 @@ public class PostingService {
 
         posting.finish(true);
         posting.getParticipantList().stream().forEach(participant -> {
-            alarmService.createAlarm(participant.getMember(), AlarmType.DONE, posting.getId(), posting.getTitle());
+            try {
+                applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                        .postingId(postingId)
+                        .alarmType(AlarmType.DONE)
+                        .member(member)
+                        .title(posting.getTitle()).build());
+
+            } catch(Exception e){
+                System.out.println(ErrorCode.ALARM_NOT_FOUND);
+            }
         });
     }
 
@@ -145,7 +157,17 @@ public class PostingService {
         );
 
         posting.getParticipantList().stream().forEach(participant -> {
-            alarmService.createAlarm(participant.getMember(), AlarmType.UPDATE, posting.getId(), posting.getTitle());
+            try {
+                applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                        .postingId(postingId)
+                        .alarmType(AlarmType.UPDATE)
+                        .member(member)
+                        .title(posting.getTitle()).build());
+
+            } catch(Exception e){
+                System.out.println(ErrorCode.ALARM_NOT_FOUND);
+            }
+
         });
     }
 
@@ -163,7 +185,17 @@ public class PostingService {
         }
 
         posting.getParticipantList().stream().forEach(participant -> {
-            alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, posting.getId(), posting.getTitle());
+            try {
+                applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                        .postingId(postingId)
+                        .alarmType(AlarmType.DELETE)
+                        .member(member)
+                        .title(posting.getTitle()).build());
+
+            } catch(Exception e){
+                System.out.println(ErrorCode.ALARM_NOT_FOUND);
+            }
+
         });
 
         List<Comment> comments = commentRepository.findAllByPosting(posting);

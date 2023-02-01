@@ -1,11 +1,13 @@
 package com.example.buycation.scheduler;
 
+import com.example.buycation.alarm.dto.RealtimeAlarmDto;
 import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.repository.AlarmRepository;
 import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.common.exception.ErrorCode;
 import com.example.buycation.participant.entity.Application;
 import com.example.buycation.participant.entity.Participant;
 import com.example.buycation.participant.repository.ApplicationRepository;
@@ -17,6 +19,7 @@ import com.example.buycation.talk.entity.Talk;
 import com.example.buycation.talk.repository.ChatRoomRepository;
 import com.example.buycation.talk.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +40,10 @@ public class Scheduler {
     private final ApplicationRepository applicationRepository;
     private final ParticipantRepository participantRepository;
     private final AlarmRepository alarmRepository;
-    private final AlarmService alarmService;
+
     private final ChatRoomRepository chatRoomRepository;
     private final TalkRepository talkRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     // 초, 분, 시, 일, 월, 주 업데이트 순서
     @Scheduled(cron = "0 0/10 * * * *")
@@ -61,14 +65,33 @@ public class Scheduler {
 
                 //알림보내기
                 p.getParticipantList().stream().forEach(participant -> {
-                    alarmService.createAlarm(participant.getMember(), AlarmType.DONE, p.getId(), p.getTitle());
+                    try {
+                        applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                                .postingId(p.getId())
+                                .alarmType(AlarmType.DONE)
+                                .member(participant.getMember())
+                                .title(p.getTitle()).build());
+
+                    } catch(Exception e){
+                        System.out.println(ErrorCode.ALARM_NOT_FOUND);
+                    }
+
                 });
 
             //멤버가 안모였으면 삭제
             } else {
                 //알림보내기
                 p.getParticipantList().stream().forEach(participant -> {
-                    alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, p.getId(), p.getTitle());
+                    try {
+                        applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                                .postingId(p.getId())
+                                .alarmType(AlarmType.FAIL)
+                                .member(participant.getMember())
+                                .title(p.getTitle()).build());
+
+                    } catch(Exception e){
+                        System.out.println(ErrorCode.ALARM_NOT_FOUND);
+                    }
                 });
 
                 //미리 연관 데이터 삭제
@@ -124,15 +147,26 @@ public class Scheduler {
     }
 
     @Scheduled(cron = "0 0/5 * * * *")
-    @Transactional(readOnly = true)
+    @Transactional
     public void alarm60minutesBefore() {
         System.out.println("마감 60분 전 게시글 알림 시작");
 
         List<Posting> postingList = postingRepository.findAllByDueDateBefore60Minute(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         for (Posting posting : postingList) {
             posting.getParticipantList().stream().forEach(participant -> {
-                alarmService.createAlarm(participant.getMember(), AlarmType.REMIND, posting.getId(), posting.getTitle());
+                try {
+                    applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                            .postingId(posting.getId())
+                            .alarmType(AlarmType.REMIND)
+                            .member(participant.getMember())
+                            .title(posting.getTitle()).build());
+
+                } catch(Exception e){
+                    System.out.println(ErrorCode.ALARM_NOT_FOUND);
+                }
             });
+
+
         }
 
         System.out.println("마감 60분 전 게시글 알림 종료");

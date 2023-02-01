@@ -3,6 +3,8 @@ package com.example.buycation.alarm.mapper;
 import com.example.buycation.alarm.dto.AlarmResponseDto;
 import com.example.buycation.alarm.dto.RealtimeAlarmDto;
 import com.example.buycation.alarm.entity.Alarm;
+import com.example.buycation.alarm.entity.AlarmType;
+import com.example.buycation.members.member.entity.Member;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -24,13 +26,13 @@ public class AlarmMapper {
 
     }
 
-    public RealtimeAlarmDto toRealtimeAlarmDto(Alarm alarm){
+    public RealtimeAlarmDto toRealtimeAlarmDto(Member member, AlarmType alarmType, Long postingId, String title){
         return RealtimeAlarmDto.builder()
-                .postingId(alarm.getPostingId())
-                .message(alarm.getMessage())
-                .type(alarm.getType())
+                .member(member)
+                .alarmType(alarmType)
+                .postingId(postingId)
+                .title(title)
                 .build();
-
     }
 
     public String timeGapFromNow(LocalDateTime time){
