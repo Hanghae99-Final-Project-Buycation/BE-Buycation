@@ -52,7 +52,7 @@ public class CommentService {
                 applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                         .postingId(postingId)
                         .alarmType(AlarmType.COMMENT)
-                        .member(member)
+                        .member(posting.getMember())
                         .title(posting.getTitle()).build());
             }
         } catch(Exception e){
