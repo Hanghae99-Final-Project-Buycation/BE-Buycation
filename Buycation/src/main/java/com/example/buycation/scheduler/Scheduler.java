@@ -39,7 +39,7 @@ public class Scheduler {
     private final ApplicationRepository applicationRepository;
     private final ParticipantRepository participantRepository;
     private final AlarmRepository alarmRepository;
-    private final AlarmService alarmService;
+
     private final ChatRoomRepository chatRoomRepository;
     private final TalkRepository talkRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -79,7 +79,7 @@ public class Scheduler {
                     //alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, p.getId(), p.getTitle());
                     applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                             .postingId(p.getId())
-                            .alarmType(AlarmType.DELETE)
+                            .alarmType(AlarmType.FAIL)
                             .member(participant.getMember())
                             .title(p.getTitle()).build());
                 });
