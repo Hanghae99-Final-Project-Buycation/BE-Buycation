@@ -11,7 +11,7 @@ public enum ErrorCode {
     INVALID_PARAMETER("파라미터 값을 확인해주세요.", 400),
     INVALID_EMAIL_PATTERN("email 형식에 맞지 않습니다.",400),
     INVALID_PASSWORD_PATTERN("비밀번호는 영문, 숫자, 특수문자(!@#$%^&+=)는 한 문자씩 포함 최소 8자리 이상입니다.",400),
-    INVALID_NICKNAME_PATTERN("닉네임은 영문, 숫자, 한글(자음, 모음 단위 x) 조합에 2~10자입니다.",400),
+    INVALID_NICKNAME_PATTERN("닉네임은 영문(소문자), 숫자, 한글(자음, 모음 단위 x) 조합에 2~10자입니다.",400),
     DUPLICATE_EMAIL("중복된 이메일이 존재합니다.", 400),
     DUPLICATE_NICKNAME("중복된 닉네임이 존재합니다.", 400),
     REQUIRED_ALL("모든 항목이 필수값입니다.",400),
