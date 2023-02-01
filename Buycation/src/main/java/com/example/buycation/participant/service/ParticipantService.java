@@ -138,7 +138,6 @@ public class ParticipantService {
 
         applicationRepository.deleteById(applicationId);
         try {
-            //alarmService.createAlarm(application.getMember(), AlarmType.ACCEPT, postingId,  posting.getTitle());
             applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                     .postingId(posting.getId())
                     .alarmType(AlarmType.ACCEPT)
@@ -170,7 +169,6 @@ public class ParticipantService {
 
 
         try {
-            //alarmService.createAlarm(application.getMember(), AlarmType.REJECT, postingId, posting.getTitle());
             applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                     .postingId(posting.getId())
                     .alarmType(AlarmType.REJECT)

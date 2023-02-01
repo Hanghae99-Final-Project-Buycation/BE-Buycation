@@ -7,6 +7,7 @@ import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
+import com.example.buycation.common.exception.ErrorCode;
 import com.example.buycation.participant.entity.Application;
 import com.example.buycation.participant.entity.Participant;
 import com.example.buycation.participant.repository.ApplicationRepository;
@@ -64,24 +65,33 @@ public class Scheduler {
 
                 //알림보내기
                 p.getParticipantList().stream().forEach(participant -> {
-                  //  alarmService.createAlarm(participant.getMember(), AlarmType.DONE, p.getId(), p.getTitle());
-                    applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
-                            .postingId(p.getId())
-                            .alarmType(AlarmType.DONE)
-                            .member(participant.getMember())
-                            .title(p.getTitle()).build());
+                    try {
+                        applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                                .postingId(p.getId())
+                                .alarmType(AlarmType.DONE)
+                                .member(participant.getMember())
+                                .title(p.getTitle()).build());
+
+                    } catch(Exception e){
+                        System.out.println(ErrorCode.ALARM_NOT_FOUND);
+                    }
+
                 });
 
             //멤버가 안모였으면 삭제
             } else {
                 //알림보내기
                 p.getParticipantList().stream().forEach(participant -> {
-                    //alarmService.createAlarm(participant.getMember(), AlarmType.DELETE, p.getId(), p.getTitle());
-                    applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
-                            .postingId(p.getId())
-                            .alarmType(AlarmType.FAIL)
-                            .member(participant.getMember())
-                            .title(p.getTitle()).build());
+                    try {
+                        applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                                .postingId(p.getId())
+                                .alarmType(AlarmType.FAIL)
+                                .member(participant.getMember())
+                                .title(p.getTitle()).build());
+
+                    } catch(Exception e){
+                        System.out.println(ErrorCode.ALARM_NOT_FOUND);
+                    }
                 });
 
                 //미리 연관 데이터 삭제
