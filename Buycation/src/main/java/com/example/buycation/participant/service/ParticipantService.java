@@ -76,6 +76,7 @@ public class ParticipantService {
                         .postingId(posting.getId())
                         .alarmType(AlarmType.APPLICATION)
                         .member(posting.getMember())
+                        .message(AlarmType.APPLICATION.getMessage())
                         .title(posting.getTitle()).build());
             }
         } catch(Exception e){
@@ -142,6 +143,7 @@ public class ParticipantService {
                     .postingId(posting.getId())
                     .alarmType(AlarmType.ACCEPT)
                     .member(posting.getMember())
+                    .message(AlarmType.ACCEPT.getMessage())
                     .title(posting.getTitle()).build());
         } catch(Exception e){
             System.out.println(ErrorCode.ALARM_NOT_FOUND);
@@ -173,6 +175,7 @@ public class ParticipantService {
                     .postingId(posting.getId())
                     .alarmType(AlarmType.REJECT)
                     .member(posting.getMember())
+                    .message(AlarmType.REJECT.getMessage())
                     .title(posting.getTitle()).build());
         } catch(Exception e){
             System.out.println(ErrorCode.ALARM_NOT_FOUND);

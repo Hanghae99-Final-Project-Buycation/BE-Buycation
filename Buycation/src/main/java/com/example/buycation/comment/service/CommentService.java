@@ -53,6 +53,7 @@ public class CommentService {
                         .postingId(postingId)
                         .alarmType(AlarmType.COMMENT)
                         .member(posting.getMember())
+                        .message(AlarmType.COMMENT.getMessage())
                         .title(posting.getTitle()).build());
             }
         } catch(Exception e){
