@@ -29,4 +29,6 @@ public class PostingResponseDto {
     private boolean doneStatus;
     private boolean myPosting;
     private boolean participant;
+    private double coordsX;
+    private double coordsY;
 }

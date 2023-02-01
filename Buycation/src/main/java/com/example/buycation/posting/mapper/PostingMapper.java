@@ -37,6 +37,8 @@ public class PostingMapper {
                 .doneStatus(posting.isDoneStatus())
                 .myPosting(myPosting)
                 .participant(participant)
+                .coordsX(posting.getCoordsX())
+                .coordsY(posting.getCoordsY())
                 .build();
     }
 
