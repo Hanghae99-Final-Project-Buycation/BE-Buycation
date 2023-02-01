@@ -120,7 +120,7 @@ public class PostingService {
                 applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                         .postingId(postingId)
                         .alarmType(AlarmType.DONE)
-                        .member(member)
+                        .member(participant.getMember())
                         .message(AlarmType.DONE.getMessage())
                         .title(posting.getTitle()).build());
 
@@ -162,7 +162,7 @@ public class PostingService {
                 applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                         .postingId(postingId)
                         .alarmType(AlarmType.UPDATE)
-                        .member(member)
+                        .member(participant.getMember())
                         .message(AlarmType.UPDATE.getMessage())
                         .title(posting.getTitle()).build());
 
@@ -191,7 +191,7 @@ public class PostingService {
                 applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
                         .postingId(postingId)
                         .alarmType(AlarmType.DELETE)
-                        .member(member)
+                        .member(participant.getMember())
                         .message(AlarmType.DELETE.getMessage())
                         .title(posting.getTitle()).build());
 
