@@ -1,5 +1,6 @@
 package com.example.buycation.comment.service;
 
+import com.example.buycation.alarm.dto.RealtimeAlarmDto;
 import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.dto.CommentRequestDto;
@@ -12,6 +13,7 @@ import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +30,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final PostingRepository postingRepository;
-
-    private final AlarmService alarmService;
-
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public void createComment(CommentRequestDto commentRequestDto, Member member, Long postingId) {
@@ -48,7 +48,12 @@ public class CommentService {
 
         try {
             if (!posting.getMember().getId().equals(member.getId())) {
-                alarmService.createAlarm2(posting.getMember(), AlarmType.COMMENT, postingId, posting.getTitle());
+                //alarmService.createAlarm(posting.getMember(), AlarmType.COMMENT, postingId, posting.getTitle());
+                applicationEventPublisher.publishEvent(RealtimeAlarmDto.builder()
+                        .postingId(postingId)
+                        .alarmType(AlarmType.COMMENT)
+                        .member(member)
+                        .title(posting.getTitle()).build());
             }
         } catch(Exception e){
            System.out.println(ErrorCode.ALARM_NOT_FOUND);

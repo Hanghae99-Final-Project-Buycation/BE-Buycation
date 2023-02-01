@@ -16,7 +16,6 @@ public class EmitterRepository {
 
 
     public SseEmitter save(String memberId, SseEmitter sseEmitter){
-        System.out.println("sseEmitter 생성 Id  ==========================================> " + memberId);
         sseEmitterMap.put(memberId, sseEmitter);
         return sseEmitter;
     };
@@ -30,7 +29,6 @@ public class EmitterRepository {
 
         Map<String, SseEmitter> emitters = findAllStartWithById(memberId);
         for (Map.Entry<String, SseEmitter> emitter : emitters.entrySet()) {
-            System.out.println("delete emitters id => " + emitter.getKey());
             sseEmitterMap.remove(emitter.getKey());
         }
     }

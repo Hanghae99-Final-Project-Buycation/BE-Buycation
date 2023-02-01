@@ -1,6 +1,7 @@
 package com.example.buycation.alarm.service;
 
 import com.example.buycation.alarm.dto.AlarmResponseDto;
+import com.example.buycation.alarm.dto.RealtimeAlarmDto;
 import com.example.buycation.alarm.entity.Alarm;
 import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.mapper.AlarmMapper;
@@ -71,25 +72,24 @@ public class AlarmService {
                 );
     }
 
-    public void sendAlarm(SseEmitter sseEmitter,  String eventId, String emitterId, Object data){
-        try {
-            sseEmitter.send(SseEmitter.event().id(eventId).data(data));
-        }catch(IOException | IllegalStateException exception){
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send 알람 exception " + exception);
 
-            emitterRepository.deleteById(emitterId);
-        }
-    }
 
-    public void createAlarm2(Member member, AlarmType alarmType, Long postingId, String title){
-        createAlarm(member, alarmType, postingId, title);
-        sendCountAlarm(member, false);
+    public void createAlarm(RealtimeAlarmDto realtimeAlarmDto){
+        saveAlarm(realtimeAlarmDto);
+        sendCountAlarm(realtimeAlarmDto.getMember(), false);
     }
 
 
     @Transactional
-    public void createAlarm(Member member, AlarmType alarmType, Long postingId, String title){
-        Alarm alarm = new Alarm(postingId, title, alarmType, alarmType.getMessage(), false, member);
+    public void saveAlarm(RealtimeAlarmDto realtimeAlarmDto){
+        Alarm alarm = Alarm.builder()
+                .postingId(realtimeAlarmDto.getPostingId())
+                .title(realtimeAlarmDto.getTitle())
+                .member(realtimeAlarmDto.getMember())
+                .type(realtimeAlarmDto.getType())
+                .message(realtimeAlarmDto.getMessage())
+                .isRead(false)
+                .build();
         alarmRepository.save(alarm);
     }
 
@@ -97,16 +97,8 @@ public class AlarmService {
     public void sendCountAlarm(Member member, Boolean isRead) {
         String id = String.valueOf(member.getId());
 
-        System.out.println("알림 받을 사람 : " + id);
-
         String eventId = id + "_" + System.currentTimeMillis();
         Map<String, SseEmitter> sseEmitters = emitterRepository.findAllStartWithById(id);
-
-        System.out.println("조회된 이미터 ==>> " + sseEmitters.size());
-
-        for (Map.Entry<String, SseEmitter> entry : sseEmitters.entrySet()) {
-            System.out.println(entry.getKey());
-        }
 
         sseEmitters.forEach(
                 (key, emitter) -> {
@@ -115,6 +107,15 @@ public class AlarmService {
                     sendAlarm(emitter, eventId, key, count);
                 }
         );
+    }
+
+
+    public void sendAlarm(SseEmitter sseEmitter,  String eventId, String emitterId, Object data){
+        try {
+            sseEmitter.send(SseEmitter.event().id(eventId).data(data));
+        }catch(IOException | IllegalStateException exception){
+            emitterRepository.deleteById(emitterId);
+        }
     }
 
 
