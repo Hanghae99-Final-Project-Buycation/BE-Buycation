@@ -18,7 +18,7 @@ public class TalkMapper {
                 .sender(talk.getMember().getNickname())
                 .memberId(talk.getMember().getId())
                 .message(talk.getMessage())
-                .sendDate(talk.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .sendDate(talk.getCreatedAt().format(DateTimeFormatter.ofPattern("MM/dd HH:mm")))
                 .build();
     }
 
