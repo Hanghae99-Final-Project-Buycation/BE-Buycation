@@ -76,7 +76,7 @@ public class AlarmService {
 
     public void createAlarm(RealtimeAlarmDto realtimeAlarmDto){
         saveAlarm(realtimeAlarmDto);
-        sendCountAlarm(realtimeAlarmDto.getMember(), false);
+        sendCountAlarm(realtimeAlarmDto.getMember());
     }
 
 
@@ -94,7 +94,7 @@ public class AlarmService {
     }
 
     @Async
-    public void sendCountAlarm(Member member, Boolean isRead) {
+    public void sendCountAlarm(Member member) {
         String id = String.valueOf(member.getId());
 
         String eventId = id + "_" + System.currentTimeMillis();
@@ -103,7 +103,6 @@ public class AlarmService {
         sseEmitters.forEach(
                 (key, emitter) -> {
                     Long count = alarmRepository.countByIsReadFalseAndMember(member);
-                    count = isRead?count+1:count;
                     sendAlarm(emitter, eventId, key, count);
                 }
         );
@@ -144,7 +143,8 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarm.read();
-        sendCountAlarm(member ,true);
+        alarmRepository.flush();
+        sendCountAlarm(member);
     }
 
     @Transactional
@@ -154,14 +154,14 @@ public class AlarmService {
                 ()->new CustomException(ALARM_NOT_FOUND)
         );
         alarmRepository.deleteById(alarmId);
-        sendCountAlarm(member, false);
+        sendCountAlarm(member);
     }
 
     @Transactional
     public void deleteAllAlarms(UserDetailsImpl userDetails) {
         Member member = userDetails.getMember();
         alarmRepository.deleteAllByMember(member);
-        sendCountAlarm(member, false);
+        sendCountAlarm(member);
     }
 
     @Transactional
