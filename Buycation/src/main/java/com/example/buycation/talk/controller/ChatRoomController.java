@@ -1,6 +1,7 @@
 package com.example.buycation.talk.controller;
 
 
+import com.example.buycation.common.PageConfig.PageRequest;
 import com.example.buycation.common.ResponseMessage;
 import com.example.buycation.security.UserDetailsImpl;
 import com.example.buycation.talk.dto.TalkEntryResponseDto;
@@ -9,10 +10,7 @@ import com.example.buycation.talk.dto.ChatRoomResponseDto;
 import com.example.buycation.talk.service.TalkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,8 +31,12 @@ public class ChatRoomController {
 
     @GetMapping("/room/{roomId}")
     public ResponseMessage<?> joinChatRoom(@PathVariable Long roomId,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
-        TalkEntryResponseDto talkList = talkService.findAllMessageByTalkRoomId(roomId, userDetails);
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                           @RequestParam(value = "key" , required = false) Long key){
+        //TalkEntryResponseDto talkList = talkService.findAllMessageByTalkRoomId(roomId, userDetails, new PageRequest(key));
+        TalkEntryResponseDto talkList = talkService.findAllMessageFromRedis(roomId, userDetails, new PageRequest(key));
+        System.out.println("talkList size " + talkList.getTalks().size());
         return new ResponseMessage<TalkEntryResponseDto>(TALK_SEARCH_SUCCESS, talkList);
     }
+
 }

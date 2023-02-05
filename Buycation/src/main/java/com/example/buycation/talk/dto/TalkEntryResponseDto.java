@@ -14,4 +14,5 @@ public class TalkEntryResponseDto {
     private ChatRoomResponseDto roomInfo;
     private List<ParticipantResponseDto> participants;
     private List<TalkResponseDto> talks;
+    private Long key;
 }

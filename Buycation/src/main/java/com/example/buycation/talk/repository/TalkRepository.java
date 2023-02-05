@@ -17,6 +17,9 @@ public interface TalkRepository extends JpaRepository<Talk, Long> {
     void deleteAllByInQuery(@Param("talks") List<Talk> talks);
 
     List<Talk> findAllByChatRoom(ChatRoom chatRoom);
+
+    List<Talk> findTop50ByChatRoomOrderByIdDesc(ChatRoom chatRoom);
+    List<Talk> findTop50ByIdLessThanAndChatRoomOrderByIdDesc(Long id, ChatRoom chatRoom);
     void deleteAllByChatRoom(ChatRoom chatRoom);
 
 }
