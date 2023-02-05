@@ -14,12 +14,20 @@ import com.example.buycation.participant.repository.ApplicationRepository;
 import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
+import com.example.buycation.talk.dto.TalkRedisDto;
+import com.example.buycation.talk.dto.TalkResponseDto;
 import com.example.buycation.talk.entity.ChatRoom;
 import com.example.buycation.talk.entity.Talk;
 import com.example.buycation.talk.repository.ChatRoomRepository;
+import com.example.buycation.talk.repository.TalkJdbcRepository;
+import com.example.buycation.talk.repository.TalkRedisRepository;
 import com.example.buycation.talk.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.BoundZSetOperations;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +53,12 @@ public class Scheduler {
     private final TalkRepository talkRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final TalkRedisRepository talkRedisRepository;
+
+    private final TalkJdbcRepository talkJdbcRepository;
+
     // 초, 분, 시, 일, 월, 주 업데이트 순서
-    @Scheduled(cron = "0 0/10 * * * *")
+    //@Scheduled(cron = "0 0/10 * * * *")
     @Transactional
     public void updatePostings() {
         System.out.println("게시글 업데이트 시작");
@@ -121,7 +133,7 @@ public class Scheduler {
         System.out.println("게시글 업데이트 종료");
     }
 
-    @Scheduled(cron = "0 0 5 * * *")
+    //@Scheduled(cron = "0 0 5 * * *")
     @Transactional
     public void dueDatePostingChatRoomDelete() {
         System.out.println("완료된 게시글 채팅룸 삭제 시작");
@@ -148,12 +160,13 @@ public class Scheduler {
         System.out.println("완료된 게시글 채팅룸 삭제 종료");
     }
 
-    @Scheduled(cron = "0 0/5 * * * *")
+   // @Scheduled(cron = "0 0/5 * * * *")
     @Transactional
     public void alarm60minutesBefore() {
         System.out.println("마감 60분 전 게시글 알림 시작");
 
-        List<Posting> postingList = postingRepository.findUpdateData(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), false);
+        List<Posting> postingList = postingRepository.findUpdateData(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                                                                    , false);
         for (Posting posting : postingList) {
             posting.getParticipantList().stream().forEach(participant -> {
                 try {
@@ -173,12 +186,24 @@ public class Scheduler {
         System.out.println("마감 60분 전 게시글 알림 종료");
     }
 
-    @Scheduled(cron = "0 0 3 * * *")
+    //@Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void deleteOldAlarmAfterAMonth() {
         System.out.println("30일 지난 알림 데이타 삭제 시작");
         alarmRepository.deleteAlarmByDueDateBeforeAMonth(LocalDateTime.now().minusMonths(1));
         System.out.println("30일 지난 알림 데이타 삭제 종료");
+    }
+
+
+
+    // 1시간 마다 Chatting Data Redis -> MySQL 에 저장
+    @Scheduled(cron = "0 0/5 * * * *")
+    @Transactional
+    public void writeBack() {
+        List<TalkRedisDto> talkRedisDtos = talkRedisRepository.findAllMsgs();
+        System.out.println("schedule controller talkRedisDto suze " + talkRedisDtos.size());
+        talkJdbcRepository.batchInsert(talkRedisDtos);
+        talkRedisRepository.deleteMessageInRedis();
     }
 
 }
