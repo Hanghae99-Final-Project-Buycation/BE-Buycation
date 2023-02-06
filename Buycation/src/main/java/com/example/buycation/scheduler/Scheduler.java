@@ -58,7 +58,7 @@ public class Scheduler {
     private final TalkJdbcRepository talkJdbcRepository;
 
     // 초, 분, 시, 일, 월, 주 업데이트 순서
-    //@Scheduled(cron = "0 0/10 * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     @Transactional
     public void updatePostings() {
         System.out.println("게시글 업데이트 시작");
@@ -133,7 +133,7 @@ public class Scheduler {
         System.out.println("게시글 업데이트 종료");
     }
 
-    //@Scheduled(cron = "0 0 5 * * *")
+    @Scheduled(cron = "0 0 5 * * *")
     @Transactional
     public void dueDatePostingChatRoomDelete() {
         System.out.println("완료된 게시글 채팅룸 삭제 시작");
@@ -160,7 +160,7 @@ public class Scheduler {
         System.out.println("완료된 게시글 채팅룸 삭제 종료");
     }
 
-   // @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0/5 * * * *")
     @Transactional
     public void alarm60minutesBefore() {
         System.out.println("마감 60분 전 게시글 알림 시작");
@@ -186,7 +186,7 @@ public class Scheduler {
         System.out.println("마감 60분 전 게시글 알림 종료");
     }
 
-    //@Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void deleteOldAlarmAfterAMonth() {
         System.out.println("30일 지난 알림 데이타 삭제 시작");
@@ -197,7 +197,7 @@ public class Scheduler {
 
 
     // 1시간 마다 Chatting Data Redis -> MySQL 에 저장
-    @Scheduled(cron = "0 0/5 * * * *")
+    @Scheduled(cron = "0 0/10 * * * *")
     @Transactional
     public void writeBack() {
         System.out.println("채팅 redis내용 MySQL저장 시작");

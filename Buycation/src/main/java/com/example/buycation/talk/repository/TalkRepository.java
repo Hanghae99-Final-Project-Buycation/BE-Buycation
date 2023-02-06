@@ -20,6 +20,5 @@ public interface TalkRepository extends JpaRepository<Talk, Long> {
 
     List<Talk> findTop50ByChatRoomOrderByIdDesc(ChatRoom chatRoom);
     List<Talk> findTop50ByIdLessThanAndChatRoomOrderByIdDesc(Long id, ChatRoom chatRoom);
-    void deleteAllByChatRoom(ChatRoom chatRoom);
 
 }

@@ -63,22 +63,19 @@ public class TalkRedisRepository {
                 .sendDate(talkRedisDto.getSendDate().format(DateTimeFormatter.ofPattern("MM월 dd일 HH:mm")))
                 .build();
 
-        // 메세지를 추가해줄 레포지토리를 찾는다.
         List<TalkRedisDto> chatMessages = opsHashChatMsg.get(TALK_MESSAGES, "TALK" + roomId.toString());
 
-        //메세지를 처음 보내는 경우에는 빈 리스트를 넣어줌
         if(chatMessages == null){
             chatMessages = new ArrayList<>();
             opsHashChatMsg.put(TALK_MESSAGES, "TALK" + roomId.toString(), chatMessages);
         }
-        // 해당 레디스 해쉬에 메세지 정보를 추가
+
         chatMessages.add(talkRedisDto);
         opsHashChatMsg.put(TALK_MESSAGES, "TALK" + roomId.toString(), chatMessages);
-        System.out.println("redis에 메세지 저장 ");
+
     }
 
     public void deleteMessageInRedis(){
-        //opsHashChatMsg.delete(TALK_MESSAGES);
         Set<String> keys = opsHashChatMsg.keys(TALK_MESSAGES);
         keys.stream().forEach(key -> {
             opsHashChatMsg.delete(TALK_MESSAGES, key);

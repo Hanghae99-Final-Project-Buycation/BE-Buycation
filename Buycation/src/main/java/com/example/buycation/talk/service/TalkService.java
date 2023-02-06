@@ -52,57 +52,6 @@ public class TalkService {
         chatRoomRepository.save(new ChatRoom(posting));
     }
 
-
-//    @Transactional
-//    public TalkEntryResponseDto findAllMessageByTalkRoomId(Long roomId, UserDetailsImpl userDetails, PageRequest pageRequest) {
-//
-//        List<Talk> talks = new ArrayList<>();
-//        Long nextKey = -1L;
-//        List<TalkResponseDto> talksDto = new ArrayList<>();
-//
-//        List<ParticipantResponseDto> ParticipantResponseDtos= new ArrayList<>();
-//        Member member = userDetails.getMember();
-//
-//        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
-//                ()-> new CustomException(TALKROOM_NOT_FOUND)
-//        );
-//
-//        Boolean isParticipant = false;
-//        for (Participant participant:chatRoom.getPosting().getParticipantList()) {
-//            ParticipantResponseDto participantResponseDto = participantMapper.toParticipantResponseDto(participant);
-//            ParticipantResponseDtos.add(participantResponseDto);
-//            if(participantResponseDto.getMemberId().equals(member.getId())) isParticipant = true;
-//        }
-//
-//        if(!isParticipant){
-//            throw new CustomException(AUTHORIZATION_TALKROOM);
-//        }
-//
-//
-//        if(pageRequest.hasKey(pageRequest.getKey())){
-//            talks = talkRepository.findTop50ByIdLessThanAndChatRoomOrderByIdDesc(pageRequest.getKey(), chatRoom);
-//        }else{
-//            talks = talkRepository.findTop50ByChatRoomOrderByIdDesc(chatRoom);
-//        }
-//
-//
-//        for(Talk talk : talks){
-//            talksDto.add(talkMapper.toTalkResponseDto(talk));
-//            if(nextKey.equals(-1L))nextKey = talk.getId();
-//            else if(nextKey > talk.getId()) nextKey = talk.getId();
-//        }
-//
-//        return TalkEntryResponseDto.builder()
-//                .memberId(member.getId())
-//                .nickname(member.getNickname())
-//                .talks(talksDto)
-//                .participants(ParticipantResponseDtos)
-//                .roomInfo(chatRoomMapper.toTalkRoomResponseDto(chatRoom))
-//                .key(nextKey)
-//                .build();
-//
-//    }
-
     @Transactional
     public TalkEntryResponseDto findAllMessageFromRedis(Long roomId, UserDetailsImpl userDetails, PageRequest pageRequest) {
 
@@ -132,12 +81,11 @@ public class TalkService {
             talkRedisDtos = talkRedisRepository.findMsgByRoomId(roomId);
 
             if (talkRedisDtos.size() < 50) {
-                System.out.println("redis에서 db 조회 확인");
                 talks = talkRepository.findTop50ByChatRoomOrderByIdDesc(chatRoom);
                 nextKey = talks.stream().mapToLong(Talk::getId).min().orElse(PageRequest.NONE_KEY);
             }
         }
-        System.out.println("talk size " + talks.size());
+
         Collections.reverse(talks);
         talkResponseDtos.addAll(talks.stream().map(talkMapper::toTalkResponseDto).toList());
         talkRedisDtos.stream().forEach(talkRedisDto -> {
@@ -158,8 +106,6 @@ public class TalkService {
 
     @Transactional
     public TalkRedisDto createMessage(Long roomId, TalkRequestDto talkRequestDto) {
-
-        //ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
 
         Optional<Member> member= memberRepository.findById(talkRequestDto.getMemberId());
         if(member.isEmpty()){
