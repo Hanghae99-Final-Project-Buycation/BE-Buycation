@@ -166,7 +166,7 @@ public class TalkService {
             throw new CustomException(AUTHORIZATION_TALKROOM);
         }
 
-        TalkRedisDto talkRedisDto = talkMapper.dtoToTalkRedisDto(talkRequestDto);
+        TalkRedisDto talkRedisDto = talkMapper.dtoToTalkRedisDto(talkRequestDto, roomId);
         talkRedisRepository.addMessageInRedis(roomId, talkRedisDto);
         return talkRedisDto;
 

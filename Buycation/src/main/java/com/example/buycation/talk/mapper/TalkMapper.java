@@ -36,9 +36,9 @@ public class TalkMapper {
                 .build();
     }
 
-    public TalkRedisDto dtoToTalkRedisDto(TalkRequestDto talkRequestDto) {
+    public TalkRedisDto dtoToTalkRedisDto(TalkRequestDto talkRequestDto, Long roomId) {
         return TalkRedisDto.builder()
-                .talkRoomId(talkRequestDto.getRoomId())
+                .talkRoomId(roomId)
                 .message(talkRequestDto.getMessage())
                 .sender(talkRequestDto.getSender())
                 .memberId(talkRequestDto.getMemberId())
