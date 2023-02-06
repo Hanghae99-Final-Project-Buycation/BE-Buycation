@@ -129,7 +129,6 @@ public class TalkService {
         } else {
 
             talkRedisDtos = talkRedisRepository.findMsgByRoomId(roomId);
-            System.out.println("redis size >> " + talkRedisDtos.get(0).getSendDate());
             if (talkRedisDtos.size() < 50) {
                 System.out.println("redis에서 db 조회 확인");
                 talks = talkRepository.findTop50ByChatRoomOrderByIdDesc(chatRoom);
