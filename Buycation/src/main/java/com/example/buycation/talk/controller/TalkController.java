@@ -25,7 +25,8 @@ public class TalkController {
     @MessageMapping("/{roomId}")
     @SendTo("/talk/{roomId}")
     public TalkResponseDto talk(@DestinationVariable Long roomId, TalkRequestDto talkRequestDto){
- //   public TalkResponseDto talk(@PathVariable Long roomId, @RequestBody TalkRequestDto talkRequestDto){
+//    @PostMapping("/talk/{roomId}")
+//    public TalkResponseDto talk(@PathVariable Long roomId, @RequestBody TalkRequestDto talkRequestDto){
         TalkRedisDto talkRedisDto = talkService.createMessage(roomId, talkRequestDto);
         return TalkResponseDto.builder()
                 .talkRoomId(roomId)

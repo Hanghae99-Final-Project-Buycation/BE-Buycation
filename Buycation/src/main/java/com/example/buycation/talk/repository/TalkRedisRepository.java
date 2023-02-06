@@ -37,7 +37,6 @@ public class TalkRedisRepository {
         talkRedisDtos = opsHashChatMsg.get(TALK_MESSAGES, "TALK" + roomId.toString());
 
         if (talkRedisDtos == null) talkRedisDtos = new ArrayList<>();
-        else Collections.reverse(talkRedisDtos);
 
         return talkRedisDtos;
     }

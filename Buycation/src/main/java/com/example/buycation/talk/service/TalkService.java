@@ -106,8 +106,8 @@ public class TalkService {
     @Transactional
     public TalkEntryResponseDto findAllMessageFromRedis(Long roomId, UserDetailsImpl userDetails, PageRequest pageRequest) {
 
-        //List<TalkResponseDto> talkResponseDtos = new ArrayList<>();
         List<TalkRedisDto> talkRedisDtos = new ArrayList<>();
+        List<TalkResponseDto> talkResponseDtos = new ArrayList<>();
         List<ParticipantResponseDto> ParticipantResponseDtos = new ArrayList<>();
         List<Talk> talks = new ArrayList<>();
         Long nextKey = null;
@@ -124,11 +124,13 @@ public class TalkService {
         }
 
         if (pageRequest.hasKey(pageRequest.getKey())) {
+
             talks = talkRepository.findTop50ByIdLessThanAndChatRoomOrderByIdDesc(pageRequest.getKey(), chatRoom);
             nextKey = talks.stream().mapToLong(Talk::getId).min().orElse(PageRequest.NONE_KEY);
         } else {
 
             talkRedisDtos = talkRedisRepository.findMsgByRoomId(roomId);
+
             if (talkRedisDtos.size() < 50) {
                 System.out.println("redis에서 db 조회 확인");
                 talks = talkRepository.findTop50ByChatRoomOrderByIdDesc(chatRoom);
@@ -136,12 +138,11 @@ public class TalkService {
             }
         }
         System.out.println("talk size " + talks.size());
-        List<TalkResponseDto> talkResponseDtos = new ArrayList<>();
+        Collections.reverse(talks);
+        talkResponseDtos.addAll(talks.stream().map(talkMapper::toTalkResponseDto).toList());
         talkRedisDtos.stream().forEach(talkRedisDto -> {
             talkResponseDtos.add(talkMapper.dtoToTalkResponseDto(talkRedisDto));
         });
-        talkResponseDtos.addAll(talks.stream().map(talkMapper::toTalkResponseDto).toList());
-
 
 
         return TalkEntryResponseDto.builder()
