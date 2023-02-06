@@ -1,6 +1,7 @@
 package com.example.buycation.talk.service;
 
 
+import com.example.buycation.common.PageConfig.PageRequest;
 import com.example.buycation.common.exception.CustomException;
 import com.example.buycation.members.member.entity.Member;
 import com.example.buycation.members.member.repository.MemberRepository;
@@ -14,15 +15,14 @@ import com.example.buycation.talk.entity.ChatRoom;
 import com.example.buycation.talk.mapper.ChatRoomMapper;
 import com.example.buycation.talk.mapper.TalkParticipantMapper;
 import com.example.buycation.talk.mapper.TalkMapper;
+import com.example.buycation.talk.repository.TalkRedisRepository;
 import com.example.buycation.talk.repository.TalkRepository;
 import com.example.buycation.talk.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.example.buycation.common.exception.ErrorCode.AUTHORIZATION_TALKROOM;
 import static com.example.buycation.common.exception.ErrorCode.TALKROOM_NOT_FOUND;
@@ -37,6 +37,7 @@ public class TalkService {
     private final ChatRoomMapper chatRoomMapper;
     private final TalkMapper talkMapper;
     private final TalkParticipantMapper participantMapper;
+    private final TalkRedisRepository talkRedisRepository;
 
     @Transactional(readOnly = true)
     public List<ChatRoomResponseDto> findAllRoom(UserDetailsImpl userDetails){
@@ -51,51 +52,69 @@ public class TalkService {
         chatRoomRepository.save(new ChatRoom(posting));
     }
 
-
     @Transactional
-    public TalkEntryResponseDto findAllMessageByTalkRoomId(Long roomId, UserDetailsImpl userDetails) {
-        List<ParticipantResponseDto> ParticipantResponseDtos= new ArrayList<>();
+    public TalkEntryResponseDto findAllMessageFromRedis(Long roomId, UserDetailsImpl userDetails, PageRequest pageRequest) {
+
+        List<TalkRedisDto> talkRedisDtos = new ArrayList<>();
+        List<TalkResponseDto> talkResponseDtos = new ArrayList<>();
+        List<ParticipantResponseDto> ParticipantResponseDtos = new ArrayList<>();
+        List<Talk> talks = new ArrayList<>();
+        Long nextKey = null;
+
         Member member = userDetails.getMember();
 
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
-                ()-> new CustomException(TALKROOM_NOT_FOUND)
+                () -> new CustomException(TALKROOM_NOT_FOUND)
         );
 
-        Boolean isParticipant = false;
-        for (Participant participant:chatRoom.getPosting().getParticipantList()) {
+        for (Participant participant : chatRoom.getPosting().getParticipantList()) {
             ParticipantResponseDto participantResponseDto = participantMapper.toParticipantResponseDto(participant);
             ParticipantResponseDtos.add(participantResponseDto);
-            if(participantResponseDto.getMemberId().equals(member.getId())) isParticipant = true;
         }
 
-        if(!isParticipant){
-            throw new CustomException(AUTHORIZATION_TALKROOM);
+        if (pageRequest.hasKey(pageRequest.getKey())) {
+
+            talks = talkRepository.findTop50ByIdLessThanAndChatRoomOrderByIdDesc(pageRequest.getKey(), chatRoom);
+            nextKey = talks.stream().mapToLong(Talk::getId).min().orElse(PageRequest.NONE_KEY);
+        } else {
+
+            talkRedisDtos = talkRedisRepository.findMsgByRoomId(roomId);
+
+            if (talkRedisDtos.size() < 50) {
+                talks = talkRepository.findTop50ByChatRoomOrderByIdDesc(chatRoom);
+                nextKey = talks.stream().mapToLong(Talk::getId).min().orElse(PageRequest.NONE_KEY);
+            }
         }
 
-        List<Talk> talks = talkRepository.findAllByChatRoom(chatRoom);
-        List<TalkResponseDto> talksDto = talks.stream().map(talk -> talkMapper.toTalkResponseDto(talk)).toList();
+        Collections.reverse(talks);
+        talkResponseDtos.addAll(talks.stream().map(talkMapper::toTalkResponseDto).toList());
+        talkRedisDtos.stream().forEach(talkRedisDto -> {
+            talkResponseDtos.add(talkMapper.dtoToTalkResponseDto(talkRedisDto));
+        });
+
 
         return TalkEntryResponseDto.builder()
                 .memberId(member.getId())
                 .nickname(member.getNickname())
-                .talks(talksDto)
+                .talks(talkResponseDtos)
                 .participants(ParticipantResponseDtos)
                 .roomInfo(chatRoomMapper.toTalkRoomResponseDto(chatRoom))
+                .key(nextKey)
                 .build();
     }
 
 
     @Transactional
-    public TalkResponseDto createMessage(Long roomId, TalkRequestDto talkRequestDto) {
-
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
+    public TalkRedisDto createMessage(Long roomId, TalkRequestDto talkRequestDto) {
 
         Optional<Member> member= memberRepository.findById(talkRequestDto.getMemberId());
         if(member.isEmpty()){
             throw new CustomException(AUTHORIZATION_TALKROOM);
         }
-        Talk talk = talkMapper.toTalk(talkRequestDto, chatRoom, member.get());
-        talkRepository.save(talk);
-        return talkMapper.toTalkResponseDto(talk);
+
+        TalkRedisDto talkRedisDto = talkMapper.dtoToTalkRedisDto(talkRequestDto, roomId);
+        talkRedisRepository.addMessageInRedis(roomId, talkRedisDto);
+        return talkRedisDto;
+
     }
 }
