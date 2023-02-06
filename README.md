@@ -51,6 +51,7 @@
 <img src="https://img.shields.io/badge/codedeploy-6DB33F?style=for-the-badge&logo=codedeploy&logoColor=white">
 <img src="https://img.shields.io/badge/redis-red?style=for-the-badge&logo=redis&logoColor=white">
 <img src="https://img.shields.io/badge/websocket-yellow?style=for-the-badge&logo=websocket&logoColor=white">
+<img src="https://img.shields.io/badge/SSE-informational?style=for-the-badge&logo=SSE&logoColor=white">
 <br />
 
 
