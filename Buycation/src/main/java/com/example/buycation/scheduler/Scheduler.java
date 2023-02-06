@@ -200,10 +200,12 @@ public class Scheduler {
     @Scheduled(cron = "0 0/5 * * * *")
     @Transactional
     public void writeBack() {
+        System.out.println("채팅 redis내용 MySQL저장 시작");
         List<TalkRedisDto> talkRedisDtos = talkRedisRepository.findAllMsgs();
         System.out.println("schedule controller talkRedisDto suze " + talkRedisDtos.size());
         talkJdbcRepository.batchInsert(talkRedisDtos);
         talkRedisRepository.deleteMessageInRedis();
+        System.out.println("채팅 redis내용 MySQL저장 종료");
     }
 
 }

@@ -28,6 +28,12 @@ public class TalkJdbcRepository {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 TalkRedisDto talkRedisDto = talkRedisDtos.get(i);
 
+                System.out.println("1 : " + talkRedisDto.getSendDate());
+                System.out.println("2 : " + talkRedisDto.getMessage());
+                System.out.println("3 : " + talkRedisDto.getSender());
+                System.out.println("4 : " + talkRedisDto.getTalkRoomId());
+                System.out.println("5 : " + talkRedisDto.getMemberId());
+
                 ps.setTimestamp(1, Timestamp.valueOf(talkRedisDto.getSendDate()));
                 ps.setString(2, talkRedisDto.getMessage());
                 ps.setString(3, talkRedisDto.getSender());
