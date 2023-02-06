@@ -50,7 +50,7 @@
 <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=for-the-badge&logo=GitHub Actions&logoColor=white"> 
 <img src="https://img.shields.io/badge/codedeploy-6DB33F?style=for-the-badge&logo=codedeploy&logoColor=white">
 <img src="https://img.shields.io/badge/redis-red?style=for-the-badge&logo=redis&logoColor=white">
-<img src="https://img.shields.io/badge/stomp-yellow?style=for-the-badge&logo=stomp&logoColor=white">
+<img src="https://img.shields.io/badge/websocket-yellow?style=for-the-badge&logo=websocket&logoColor=white">
 <br />
 
 
