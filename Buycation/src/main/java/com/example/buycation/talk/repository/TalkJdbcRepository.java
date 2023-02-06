@@ -20,8 +20,8 @@ public class TalkJdbcRepository {
     public void batchInsert(List<TalkRedisDto> talkRedisDtos){
 
         String sql = "INSERT INTO talk"
-                +"(created_at, message, sender, talk_room_id, member_id)"
-                +"VALUES (?, ?, ?, ?, ?)";
+                +"(created_at, message, talk_room_id, member_id)"
+                +"VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
