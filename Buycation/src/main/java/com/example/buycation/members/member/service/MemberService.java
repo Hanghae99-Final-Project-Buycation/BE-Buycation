@@ -88,9 +88,8 @@ public class MemberService {
         String inputPassword = loginRequestDto.getPassword();
 
         //클라이언트의 ip 가져오기
-        String getIp = null;
         String ip = request.getHeader("X-Forwarded-For");
-        getIp = "현재 로그인 유저 IP, X-Forwarded-For :" + ip;
+        String getIp = "현재 로그인 유저 IP, X-Forwarded-For :" + ip;
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
             getIp = "현재 로그인 유저 IP, Proxy-Client-IP :" + ip;
