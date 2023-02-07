@@ -41,4 +41,3 @@ gradlew
 gradlew.bat
 src/main/resources/application-private.properties
 src/main/resources/application-email.properties
-src/main/resources/application-redis.properties
