@@ -88,40 +88,42 @@ public class MemberService {
         String inputPassword = loginRequestDto.getPassword();
 
         //클라이언트의 ip 가져오기
+        String getIp = null;
         String ip = request.getHeader("X-Forwarded-For");
-        log.info("현재 IP, X-Forwarded-For :" + ip);
+        getIp = "현재 로그인 유저 IP, X-Forwarded-For :" + ip;
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
-            log.info("현재 IP, Proxy-Client-IP :" + ip);
+            getIp = "현재 로그인 유저 IP, Proxy-Client-IP :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
-            log.info("현재 IP, WL-Proxy-Client-IP :" + ip);
+            getIp = "현재 로그인 유저 IP, WL-Proxy-Client-IP :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_CLIENT_IP");
-            log.info("현재 IP, HTTP_CLIENT_IP :" + ip);
+            getIp = "현재 로그인 유저 IP, HTTP_CLIENT_IP :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-            log.info("현재 IP, HTTP_X_FORWARDED_FOR :" + ip);
+            getIp = "현재 로그인 유저 IP, HTTP_X_FORWARDED_FOR :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Real-IP");
-            log.info("현재 IP, X-Real-IP :" + ip);
+            getIp = "현재 로그인 유저 IP, X-Real-IP :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-RealIP");
-            log.info("현재 IP, X-RealIP :" + ip);
+            getIp = "현재 로그인 유저 IP, X-RealIP :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("REMOTE_ADDR");
-            log.info("현재 IP, REMOTE_ADDR :" + ip);
+            getIp = "현재 로그인 유저 IP, REMOTE_ADDR :" + ip;
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
-            log.info("현재 IP :" + ip);
+            getIp = "현재 로그인 유저 IP :" + ip;
         }
+        log.info(getIp);
 
         Member member = memberRepository.findByEmail(inputEmail).orElseThrow(
                 () -> new CustomException(MEMBER_NOT_FOUND)
