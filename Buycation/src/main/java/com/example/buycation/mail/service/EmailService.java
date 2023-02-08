@@ -96,21 +96,24 @@ public class EmailService {
             throw new CustomException(EMAIL_SEND_FAIL);
         }
         //전에 보낸 인증 객체가 있다면 삭제 후 재생성
-        EmailCheck emailCheck = emailCheckRepository.findByEmail(email);
-        if (emailCheck != null) {
+        try {
+            EmailCheck emailCheck = emailCheckRepository.findById(email).get();
             emailCheckRepository.delete(emailCheck);
+            emailCheckRepository.save(emailCheckMapper.toEmailCheck(email, code, false, 180));
+        }catch (Exception e){
+            emailCheckRepository.save(emailCheckMapper.toEmailCheck(email, code, false, 180));
         }
-        emailCheckRepository.save(emailCheckMapper.toEmailCheck(email, code));
         return code;
     }
 
     @Transactional
     public void emailCheck(String email, String code) {
-        EmailCheck emailCheck = emailCheckRepository.findByEmail(email);
+        EmailCheck emailCheck = emailCheckRepository.findById(email).get();
         if (!emailCheck.getCode().equals(code)) {
             throw new CustomException(EMAIL_CHECK_FAIL);
         }
-        emailCheck.success();
+        emailCheckRepository.delete(emailCheck);
+        emailCheckRepository.save(emailCheckMapper.toEmailCheck(email, code, true, 600));
     }
 }
 

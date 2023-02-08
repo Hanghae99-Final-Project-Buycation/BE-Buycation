@@ -29,7 +29,7 @@ public enum ErrorCode {
     POSTING_SUCCESS_ERROR("구인 완료가 되지않은 게시물입니다.",400),
     WRONG_CATEGORY_ERROR("잘못된 카테고리입니다.",400),
     WRONG_SORT_ERROR("잘못된 정렬입니다.",400),
-    EMAIL_CERTIFICATION_FAIL("이메일 인증이 확인되지 않습니다.",400),
+    EMAIL_CERTIFICATION_FAIL("인증 확인시간이 만료됬거나 이메일 인증이 확인되지 않습니다.",400),
     EMAIL_SEND_FAIL("이메일 발송에 실패하였습니다.",400),
     EMAIL_CHECK_FAIL("이메일 인증코드가 일치하지 않습니다.",400),
 
