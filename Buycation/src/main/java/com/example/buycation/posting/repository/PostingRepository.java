@@ -16,6 +16,11 @@ public interface PostingRepository extends JpaRepository<Posting, Long>, Posting
     List<Posting> findUpdateData(@Param("currentDateTime")String currentDateTime,
                                  @Param("status")boolean status);
 
+    @Query("SELECT p FROM Posting p where p.doneStatus = :status and p.dueDate <= :alarm60minutes and p.dueDate > :alarm55minutes")
+    List<Posting> find60Alarm(@Param("alarm60minutes")String alarm60minutes,
+                              @Param("alarm55minutes")String alarm55minutes,
+                              @Param("status")boolean status);
+
     @Modifying
     @Query("delete from Posting p where p in :postings")
     void deleteAllByIdInQuery(@Param("postings") List<Posting> postings);

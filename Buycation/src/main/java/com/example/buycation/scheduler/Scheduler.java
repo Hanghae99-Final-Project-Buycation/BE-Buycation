@@ -3,7 +3,6 @@ package com.example.buycation.scheduler;
 import com.example.buycation.alarm.dto.RealtimeAlarmDto;
 import com.example.buycation.alarm.entity.AlarmType;
 import com.example.buycation.alarm.repository.AlarmRepository;
-import com.example.buycation.alarm.service.AlarmService;
 import com.example.buycation.comment.entity.Comment;
 import com.example.buycation.comment.repository.CommentRepository;
 import com.example.buycation.common.exception.CustomException;
@@ -15,7 +14,6 @@ import com.example.buycation.participant.repository.ParticipantRepository;
 import com.example.buycation.posting.entity.Posting;
 import com.example.buycation.posting.repository.PostingRepository;
 import com.example.buycation.talk.dto.TalkRedisDto;
-import com.example.buycation.talk.dto.TalkResponseDto;
 import com.example.buycation.talk.entity.ChatRoom;
 import com.example.buycation.talk.entity.Talk;
 import com.example.buycation.talk.repository.ChatRoomRepository;
@@ -24,10 +22,6 @@ import com.example.buycation.talk.repository.TalkRedisRepository;
 import com.example.buycation.talk.repository.TalkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.core.BoundZSetOperations;
-import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.ScanOptions;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -165,8 +159,8 @@ public class Scheduler {
     public void alarm60minutesBefore() {
         System.out.println("마감 60분 전 게시글 알림 시작");
 
-        List<Posting> postingList = postingRepository.findUpdateData(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-                                                                    , false);
+        List<Posting> postingList = postingRepository.find60Alarm(LocalDateTime.now().plusMinutes(60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                LocalDateTime.now().plusMinutes(55).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), false);
         for (Posting posting : postingList) {
             posting.getParticipantList().stream().forEach(participant -> {
                 try {
