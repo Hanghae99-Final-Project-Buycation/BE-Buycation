@@ -7,6 +7,8 @@
 
 💕 **[바이케이션 서비스 바로가기](https://buycation.co.kr/)**
 
+📽 **[발표 영상](https://www.youtube.com/watch?v=tudZA3Wh4WE)**
+
 <br />
 
 
@@ -52,13 +54,12 @@
 <img src="https://img.shields.io/badge/redis-red?style=for-the-badge&logo=redis&logoColor=white">
 <img src="https://img.shields.io/badge/websocket-yellow?style=for-the-badge&logo=websocket&logoColor=white">
 <img src="https://img.shields.io/badge/SSE-informational?style=for-the-badge&logo=SSE&logoColor=white">
+
 <br />
 
 
 ## 아키텍쳐
-<img width="920" height="420" alt="스크린샷 2023-02-05 오후 3 49 35" src="https://user-images.githubusercontent.com/96729804/216894359-297b14f2-ea09-4bb6-bb48-b22bc47f37c0.png">
-
-<br />
+![buycation](https://user-images.githubusercontent.com/96729804/217191176-45483a06-fc2f-49c3-b758-2cc4d75e2d9c.png)
 
 
 ## 주요 기능
@@ -119,4 +120,4 @@
 
 ## 프로젝트 기록
 📔  **[노션 링크](https://www.notion.so/10-A-6-72a2a86ec3f9426b935c004867205c45)**
-
+🗂  **[발표 자료](https://docs.google.com/presentation/d/1Hzk6Dl5FgpQGfV8lnKj-WgLyvgEXysrq/edit#slide=id.p1)**
